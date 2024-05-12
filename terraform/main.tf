@@ -178,9 +178,9 @@ module "avm-res-compute-virtualmachine" {
   # }
 
   source_image_reference = {
-    publisher = "Canonical"
-    offer     = "ubuntu-24_04-lts"
-    sku       = "server"
+    publisher = "RedHat"
+    offer     = "RHEL"
+    sku       = "94_gen2"
     version   = "latest"
   }
 

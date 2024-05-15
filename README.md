@@ -22,6 +22,7 @@ docker push acransadvuks01.azurecr.io/ansible/ubuntu
 <https://galaxy.ansible.com/ui/repo/published/azure/azcollection/>
 <https://github.com/ansible-collections/azure/blob/dev/requirements.txt>
 
+mkdir /collections/ansible_collections/azure/azcollection/
 wget <https://github.com/ansible-collections/azure/blob/dev/requirements.txt> ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
 pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt

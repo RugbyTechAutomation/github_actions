@@ -18,8 +18,8 @@ locals {
 
   // Define vNet address prefixes
   vnet_map = {
-    "UK South" = "131.128.2.0/24",
-    "UK West"  = "131.131.2.0/24"
+    "UK South" = "131.128.2.0/27",
+    "UK West"  = "131.131.2.0/27"
   }
 
   // Get the environment code from the workspace name 

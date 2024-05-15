@@ -3,6 +3,9 @@ terraform {
     azurerm = {
       source = "hashicorp/azurerm"
     }
+    ansible = {
+      source = "ansible/ansible"
+    }
     # tls = {
     #   source  = "hashicorp/tls"
     # }
@@ -28,6 +31,10 @@ provider "azurerm" {
   features {}
   storage_use_azuread = true
   subscription_id     = "19067dda-d761-44a6-b79d-29a8e342f633" # azdev
+}
+
+provider "ansible" {
+
 }
 
 data "azurerm_client_config" "current" {}

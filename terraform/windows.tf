@@ -1,6 +1,6 @@
 module "windows" {
-  # source = "./.terraform/modules/avm-res-compute-virtualmachine"
-  source                             = "Azure/avm-res-compute-virtualmachine/azurerm"
+  # source                             = "Azure/avm-res-compute-virtualmachine/azurerm"
+  source                             = "./.terraform/modules/avm-res-compute-virtualmachine"
   for_each                           = toset(local.regions)
   admin_username                     = "localmgr"
   admin_password                     = "1QAZ2wsx3edc"
@@ -11,7 +11,7 @@ module "windows" {
   resource_group_name                = azurerm_resource_group.rg[each.key].name
   virtualmachine_os_type             = "Windows"
   virtualmachine_sku_size            = "Standard_B2as_v2" #module.get_valid_sku_for_deployment_region.sku
-  zone                               = null               #random_integer.zone_index.result
+  zone                               = null
 
   admin_ssh_keys = [
     {
@@ -80,8 +80,9 @@ module "windows" {
   source_image_reference = {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
-    sku       = "2022-datacenter-g2"
-    version   = "latest"
+    # sku       = "2022-datacenter-smalldisk-g2"
+    sku     = "2019-datacenter-smalldisk-g2"
+    version = "latest"
   }
 
   depends_on = [

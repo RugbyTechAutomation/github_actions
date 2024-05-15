@@ -22,6 +22,8 @@ pip3 install -r requirements-azure.txt
 
 # Install Ansible az collection for interacting with Azure.
 ansible-galaxy collection install azure.azcollection  --force
+ansible-galaxy collection install microsoft.ad  --force
 
 # Update OAuth
-pip install oauthlib==3.2.0
+pip install oauthlib
+pip install pywinrm

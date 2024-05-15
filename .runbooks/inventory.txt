@@ -1,0 +1,11 @@
+domain_controllers:
+  hosts:
+    dc01.ansible-poc.local:
+      ansible_user: localmgr
+      ansible_password: 1QAZ2wsx3edc
+      ansible_connection: winrm
+      ansible_port: 5985
+      ansible_host: 131.128.2.6
+#      ansible_winrm_scheme: https
+      ansible_winrm_server_cert_validation: ignore
+      ansible_winrm_transport: ntlm

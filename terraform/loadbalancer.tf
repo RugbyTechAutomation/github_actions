@@ -20,6 +20,7 @@ module "loadbalancer" {
   resource_group_name = azurerm_resource_group.rg[each.key].name
   location            = each.key
 
+
   # Frontend IP Configuration
   frontend_ip_configurations = {
     frontend_configuration_1 = {
@@ -50,13 +51,13 @@ module "loadbalancer" {
     address1 = {
       name                             = "ansible-ipconfig" #"${module.naming[each.key].network_interface.name}-ipconfig" # must be unique if multiple addresses are used
       backend_address_pool_object_name = "pool1"
-      ip_address                       = module.avm-res-compute-virtualmachine[each.key].network_interfaces["network_interface_1"].private_ip_address #"131.128.2.5" #azurerm_network_interface.be_nic[each.key].private_ip_address
+      ip_address                       = module.avm-res-compute-virtualmachine[each.key].network_interfaces["network_interface_1"].private_ip_address
       virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].virtual_network_id
     }
     address2 = {
       name                             = "windows-ipconfig" #"${module.naming[each.key].network_interface.name}-ipconfig" # must be unique if multiple addresses are used
       backend_address_pool_object_name = "pool2"
-      ip_address                       = module.windows[each.key].network_interfaces["network_interface_1"].private_ip_address #"131.128.2.5" #azurerm_network_interface.be_nic[each.key].private_ip_address
+      ip_address                       = module.windows[each.key].network_interfaces["network_interface_1"].private_ip_address
       virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].virtual_network_id
     }
   }
@@ -100,6 +101,7 @@ module "loadbalancer" {
       probe_object_name                 = "rdp"
       idle_timeout_in_minutes           = 15
       enable_tcp_reset                  = false
+      # disable_outbound_snat             = true
     }
   }
 }

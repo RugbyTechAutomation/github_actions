@@ -25,6 +25,8 @@ module "ansible" {
   #   user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
   # }
 
+  custom_data = base64encode(file("../scripts/setup.sh"))
+
   network_interfaces = {
     network_interface_1 = {
       name                           = "nic-vmansadvuks02"

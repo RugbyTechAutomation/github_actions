@@ -1,17 +1,3 @@
-resource "azurerm_network_interface" "be_nic" {
-  for_each            = toset(local.regions)
-  name                = module.naming[each.key].network_interface.name
-  location            = each.key
-  resource_group_name = azurerm_resource_group.rg[each.key].name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].id
-    private_ip_address_allocation = "Static"
-    private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 4)
-  }
-}
-
 module "loadbalancer" {
   for_each            = toset(local.regions)
   source              = "Azure/avm-res-network-loadbalancer/azurerm"
@@ -38,63 +24,52 @@ module "loadbalancer" {
   # Backend Address Pool(s)
   backend_address_pools = {
     pool1 = {
-      name                        = "ansible-ssh"
+      name                        = "dc-rdp"
       virtual_network_resource_id = module.avm-res-network-virtualnetwork[each.key].virtual_network_id # set a virtual_network_resource_id if using backend_address_pool_addresses
     }
     pool2 = {
-      name                        = "windows-rdp"
+      name                        = "ansible-ssh"
       virtual_network_resource_id = module.avm-res-network-virtualnetwork[each.key].virtual_network_id # set a virtual_network_resource_id if using backend_address_pool_addresses
     }
   }
 
   backend_address_pool_addresses = {
     address1 = {
-      name                             = "ansible-ipconfig" #"${module.naming[each.key].network_interface.name}-ipconfig" # must be unique if multiple addresses are used
+      name                             = "nic-vmansadvuks01-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
       backend_address_pool_object_name = "pool1"
-      ip_address                       = module.avm-res-compute-virtualmachine[each.key].network_interfaces["network_interface_1"].private_ip_address
+      ip_address                       = module.dc01[each.key].network_interfaces["network_interface_1"].private_ip_address
       virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].virtual_network_id
     }
     address2 = {
-      name                             = "windows-ipconfig" #"${module.naming[each.key].network_interface.name}-ipconfig" # must be unique if multiple addresses are used
+      name                             = "nic-vmansadvuks02-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
       backend_address_pool_object_name = "pool2"
-      ip_address                       = module.windows[each.key].network_interfaces["network_interface_1"].private_ip_address
+      ip_address                       = module.ansible[each.key].network_interfaces["network_interface_1"].private_ip_address
       virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].virtual_network_id
     }
   }
 
   # Health Probe(s)
   lb_probes = {
+    rdp = {
+      name                = "dc-rdp"
+      protocol            = "Tcp"
+      port                = 3389
+      interval_in_seconds = 300
+    }
     ssh = {
       name                = "ansible-ssh"
       protocol            = "Tcp"
       port                = 22
       interval_in_seconds = 300
     }
-    rdp = {
-      name                = "windows-rdp"
-      protocol            = "Tcp"
-      port                = 3389
-      interval_in_seconds = 300
-    }
   }
 
-  # Load Balaner rule(s)
+  # # Load Balaner rule(s)
   lb_rules = {
-    ssh1 = {
-      name                              = "ansible-ssh"
+    rdp = {
+      name                              = "dc-rdp"
       frontend_ip_configuration_name    = module.naming[each.key].public_ip.name
       backend_address_pool_object_names = ["pool1"]
-      protocol                          = "Tcp"
-      frontend_port                     = 22
-      backend_port                      = 22
-      probe_object_name                 = "ssh"
-      idle_timeout_in_minutes           = 15
-      enable_tcp_reset                  = false
-    }
-    rdp = {
-      name                              = "windows-rdp"
-      frontend_ip_configuration_name    = module.naming[each.key].public_ip.name
-      backend_address_pool_object_names = ["pool2"]
       protocol                          = "Tcp"
       frontend_port                     = 3389
       backend_port                      = 3389
@@ -103,5 +78,18 @@ module "loadbalancer" {
       enable_tcp_reset                  = false
       # disable_outbound_snat             = true
     }
+    ansible = {
+      name                              = "ansible-ssh"
+      frontend_ip_configuration_name    = module.naming[each.key].public_ip.name
+      backend_address_pool_object_names = ["pool2"]
+      protocol                          = "Tcp"
+      frontend_port                     = 22
+      backend_port                      = 22
+      probe_object_name                 = "ssh"
+      idle_timeout_in_minutes           = 15
+      enable_tcp_reset                  = false
+      # disable_outbound_snat             = true
+    }
   }
+
 }

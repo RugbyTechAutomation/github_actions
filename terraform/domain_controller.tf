@@ -1,40 +1,39 @@
-module "windows" {
-  # source                             = "Azure/avm-res-compute-virtualmachine/azurerm"
-  source                             = "./.terraform/modules/avm-res-compute-virtualmachine"
+module "dc01" {
+  source                             = "Azure/avm-res-compute-virtualmachine/azurerm"
   for_each                           = toset(local.regions)
   admin_username                     = "localmgr"
   admin_password                     = "1QAZ2wsx3edc"
   enable_telemetry                   = var.enable_telemetry
   generate_admin_password_or_ssh_key = false
   location                           = each.key
-  name                               = "dc01"
+  name                               = "vmansadvuks01" #replace("${module.naming[each.key].virtual_machine.name}-01", "/-/", "")
   resource_group_name                = azurerm_resource_group.rg[each.key].name
   virtualmachine_os_type             = "Windows"
-  virtualmachine_sku_size            = "Standard_B2as_v2" #module.get_valid_sku_for_deployment_region.sku
+  virtualmachine_sku_size            = "Standard_B2as_v2" #module.get_valid_sku_for_deployment_region.sku #
   zone                               = null
 
-  admin_ssh_keys = [
-    {
-      public_key = jsondecode(jsonencode(azapi_resource_action.ssh_public_key_gen.output)).publicKey
-      username   = "localmgr" #the username must match the admin_username currently.
-    }
-  ]
+  # admin_ssh_keys = [
+  #   {
+  #     public_key = jsondecode(jsonencode(azapi_resource_action.ssh_public_key_gen.output)).publicKey
+  #     username   = "localmgr" #the username must match the admin_username currently.
+  #   }
+  # ]
 
-  managed_identities = {
-    system_assigned            = true
-    user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
-  }
+  # managed_identities = {
+  #   system_assigned            = true
+  #   user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
+  # }
 
   network_interfaces = {
     network_interface_1 = {
-      name                           = "nic-dc01"
+      name                           = "nic-vmansadvuks01"
       accelerated_networking_enabled = true
       ip_configurations = {
         ip_configuration_1 = {
-          name                          = "nic-dc01-ipconfig"
+          name                          = "nic-vmansadvuks01-ipconfig"
           private_ip_subnet_resource_id = module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].id
           private_ip_address_allocation = "Static"
-          private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 6)
+          private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 4)
         }
       }
     }
@@ -43,12 +42,12 @@ module "windows" {
   os_disk = {
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
-    name                 = "dc01-osDisk"
+    name                 = "dsk-vmansadvks0-osDisk"
   }
 
   data_disk_managed_disks = {
-    for i in range(0) : format("disk-%02d", i + 1) => {
-      name                 = format("dc01-dataDisk-%02d", i + 1)
+    for i in range(2) : format("dsk-%02d", i + 1) => {
+      name                 = format("dsk-vmansadvuks01-dataDisk-%02d", i + 1)
       storage_account_type = "StandardSSD_LRS"
       create_option        = "Empty"
       disk_size_gb         = 64
@@ -80,18 +79,21 @@ module "windows" {
   source_image_reference = {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
-    # sku       = "2022-datacenter-smalldisk-g2"
-    sku     = "2019-datacenter-smalldisk-g2"
-    version = "latest"
+    sku       = "2022-datacenter-smalldisk-g2"
+    version   = "latest"
   }
 
-  depends_on = [
-    module.avm-res-keyvault-vault
-  ]
 }
 
-resource "azurerm_network_interface_security_group_association" "windows" {
-  for_each                  = toset(local.regions)
-  network_interface_id      = module.windows[each.key].network_interfaces["network_interface_1"].id
-  network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].nsg_resource.id
-}
+# resource "azurerm_network_interface_security_group_association" "windows" {
+#   for_each                  = toset(local.regions)
+#   network_interface_id      = module.avm-res-compute-virtualmachine[each.key].network_interfaces["network_interface_1"].id
+#   network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].nsg_resource.id
+# }
+
+# resource "azurerm_network_interface_backend_address_pool_association" "example" {
+#   for_each                = toset(local.regions)
+#   network_interface_id    = module.avm-res-compute-virtualmachine[each.key].network_interfaces["network_interface_1"].id
+#   ip_configuration_name   = "internal"
+#   backend_address_pool_id = "/subscriptions/19067dda-d761-44a6-b79d-29a8e342f633/resourceGroups/rg-sql-adv-uks-01/providers/Microsoft.Network/loadBalancers/lb-sql-adv-uks-01/backendAddressPools/windows-rdp"
+# }

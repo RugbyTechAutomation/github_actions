@@ -2,7 +2,7 @@ variable "enable_telemetry" {
   default = false
 }
 
-variable "rules" {
+variable "nsg_rules" {
   type = map(object(
     {
       # nsg_rule_name                       = string # (Required) Name of NSG rule.
@@ -17,10 +17,10 @@ variable "rules" {
     }
   ))
   default = {
-    "AllowAnySSHInbound" = {
+    "AllowAnyRDPInbound" = {
       nsg_rule_access                     = "Allow"
       nsg_rule_destination_address_prefix = "*"
-      nsg_rule_destination_port_range     = "22"
+      nsg_rule_destination_port_range     = "3389"
       nsg_rule_direction                  = "Inbound"
       nsg_rule_priority                   = 100
       nsg_rule_protocol                   = "Tcp"

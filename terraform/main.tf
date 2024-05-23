@@ -4,6 +4,15 @@ resource "azurerm_resource_group" "rg" {
   name     = module.naming[each.key].resource_group.name
 }
 
+module "avm-res-managedidentity-userassignedidentity" {
+  source              = "Azure/avm-res-managedidentity-userassignedidentity/azurerm"
+  for_each            = toset(local.regions)
+  enable_telemetry    = var.enable_telemetry
+  name                = module.naming[each.key].user_assigned_identity.name
+  resource_group_name = azurerm_resource_group.rg[each.key].name
+  location            = each.key
+}
+
 module "avm-res-network-virtualnetwork" {
   for_each            = toset(local.regions)
   source              = "Azure/avm-res-network-virtualnetwork/azurerm"

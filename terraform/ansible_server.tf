@@ -20,10 +20,10 @@ module "ansible" {
   #   }
   # ]
 
-  # managed_identities = {
-  #   system_assigned            = true
-  #   user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
-  # }
+  managed_identities = {
+    system_assigned            = true
+    user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
+  }
 
   custom_data = base64encode(file("../scripts/setup.sh"))
 
@@ -78,6 +78,20 @@ module "ansible" {
   #     principal_type             = "ServicePrincipal"
   #   }
   # }
+
+  allow_extension_operations = true
+
+  extensions = {
+    AAD_SSH_Login_For_Linux = {
+      name                       = "AADSSHLoginForLinux"
+      publisher                  = "Microsoft.Azure.ActiveDirectory"
+      type                       = "AADSSHLoginForLinux"
+      type_handler_version       = "1.0"
+      auto_upgrade_minor_version = true
+      automatic_upgrade_enabled  = false
+      settings                   = null
+    }
+  }
 
   source_image_reference = {
     publisher = "RedHat"

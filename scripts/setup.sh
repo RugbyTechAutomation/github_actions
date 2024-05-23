@@ -16,14 +16,20 @@ sudo pip3 install --upgrade pip
 # Install Ansible.
 sudo pip3 install ansible
 
-# Install dependencies
-wget https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements.txt -O requirements-azure.txt
-pip3 install -r requirements-azure.txt
-
 # Install Ansible az collection for interacting with Azure.
-ansible-galaxy collection install azure.azcollection  --force
-ansible-galaxy collection install microsoft.ad  --force
+ansible-galaxy collection install azure.azcollection  microsoft.ad community.azure
+wget https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements.txt
+sed -i 's/==.*//' requirements.txt
+pip3 install -r requirements.txt
+pip3 install -r requirements.txt --upgrade
 
-# Update OAuth
-pip install oauthlib
-pip install pywinrm
+# pip3 install azure-cli --upgrade
+#
+# sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+# sudo dnf install -y https://packages.microsoft.com/config/rhel/9.0/packages-microsoft-prod.rpm
+# sudo dnf install azure-cli -y
+
+# pip install azure-mgmt-resource azure-cli-core
+# pip3 install ansible[azure] --force
+pip3 install oauthlib --upgrade
+pip3 install pywinrm --upgrade

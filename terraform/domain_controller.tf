@@ -19,10 +19,10 @@ module "dc01" {
   #   }
   # ]
 
-  # managed_identities = {
-  #   system_assigned            = true
-  #   user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
-  # }
+  managed_identities = {
+    system_assigned            = true
+    user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
+  }
 
   network_interfaces = {
     network_interface_1 = {

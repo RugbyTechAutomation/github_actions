@@ -19,17 +19,17 @@ module "loadbalancer" {
   }
 
   # Virtual Network for Backend Address Pool(s)
-  backend_address_pool_configuration = module.avm-res-network-virtualnetwork[each.key].virtual_network_id
+  backend_address_pool_configuration = module.avm-res-network-virtualnetwork[each.key].resource_id
 
   # Backend Address Pool(s)
   backend_address_pools = {
     pool1 = {
       name                        = "dc-rdp"
-      virtual_network_resource_id = module.avm-res-network-virtualnetwork[each.key].virtual_network_id # set a virtual_network_resource_id if using backend_address_pool_addresses
+      virtual_network_resource_id = module.avm-res-network-virtualnetwork[each.key].resource_id # set a virtual_network_resource_id if using backend_address_pool_addresses
     }
     pool2 = {
       name                        = "ansible-ssh"
-      virtual_network_resource_id = module.avm-res-network-virtualnetwork[each.key].virtual_network_id # set a virtual_network_resource_id if using backend_address_pool_addresses
+      virtual_network_resource_id = module.avm-res-network-virtualnetwork[each.key].resource_id # set a virtual_network_resource_id if using backend_address_pool_addresses
     }
   }
 
@@ -38,14 +38,14 @@ module "loadbalancer" {
       name                             = "nic-vmansadvuks01-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
       backend_address_pool_object_name = "pool1"
       ip_address                       = module.dc01[each.key].network_interfaces["network_interface_1"].private_ip_address
-      virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].virtual_network_id
+      virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].resource_id
     }
-    address2 = {
-      name                             = "nic-vmansadvuks02-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
-      backend_address_pool_object_name = "pool2"
-      ip_address                       = module.ansible[each.key].network_interfaces["network_interface_1"].private_ip_address
-      virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].virtual_network_id
-    }
+    #   # address2 = {
+    #   #   name                             = "nic-vmansadvuks02-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
+    #   #   backend_address_pool_object_name = "pool2"
+    #   #   ip_address                       = module.ansible[each.key].network_interfaces["network_interface_1"].private_ip_address
+    #   #   virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].resource_id
+    #   # }
   }
 
   # Health Probe(s)

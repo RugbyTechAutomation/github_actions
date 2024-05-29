@@ -18,7 +18,7 @@ locals {
 
   // Define vNet address prefixes
   vnet_map = {
-    "UK South" = "131.200.2.0/27",
+    "UK South" = "141.200.1.0/27",
     "UK West"  = "141.200.2.0/27"
   }
 

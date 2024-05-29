@@ -20,18 +20,30 @@ module "avm-res-network-virtualnetwork" {
   enable_telemetry    = var.enable_telemetry
   resource_group_name = azurerm_resource_group.rg[each.key].name
   location            = each.key
+  address_space       = [local.vnet_map[each.key]]
 
   subnets = {
     "${module.naming[each.key].subnet.name}" = {
+      name             = module.naming[each.key].subnet.name
       address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 0)]
     }
+    "container_group" = {
+      name             = "container_group"
+      address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 1)]
+      delegation = [{
+        name = "Microsoft.ContainerInstance"
+        service_delegation = {
+          name = "Microsoft.ContainerInstance"
+        }
+      }]
+    }
+
   }
 
   # virtual_network_dns_servers = {
   #   dns_servers = ["8.8.8.8"]
   # }
 
-  virtual_network_address_space = [local.vnet_map[each.key]]
 }
 
 module "avm-res-network-publicipaddress" {
@@ -72,6 +84,6 @@ module "avm-res-network-networksecuritygroup" {
 
 resource "azurerm_subnet_network_security_group_association" "nsg" {
   for_each                  = toset(local.regions)
-  subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].id
+  subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].resource_id
   network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].resource_id
 }

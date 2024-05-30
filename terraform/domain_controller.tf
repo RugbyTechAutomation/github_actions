@@ -42,7 +42,7 @@ module "dc01" {
   os_disk = {
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
-    name                 = "dsk-vmansadvks0-osDisk"
+    name                 = "dsk-vmansadvuks01-osDisk"
   }
 
   data_disk_managed_disks = {

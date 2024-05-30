@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Increase size of logical volume rootvg/homelv.
-sudo lvextend -L+10GB /dev/mapper/rootvg-homelv
+sudo lvextend -L+9GB /dev/mapper/rootvg-homelv
 sudo xfs_growfs /dev/rootvg/homelv
 
 # Update all packages that have available updates.

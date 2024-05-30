@@ -26,18 +26,18 @@ module "avm-res-network-virtualnetwork" {
     "${module.naming[each.key].subnet.name}" = {
       name             = module.naming[each.key].subnet.name
       address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 0)]
+      # network_security_group = "/subscriptions/19067dda-d761-44a6-b79d-29a8e342f633/resourceGroups/rg-ans-adv-uks-01/providers/Microsoft.Network/networkSecurityGroups/nsg-ans-adv-uks-01" #module.avm-res-network-networksecuritygroup[each.key].resource_id
     }
-    "container_group" = {
-      name             = "container_group"
+    "snet-ans-adv-uks-02" = {
+      name             = "snet-ans-adv-uks-02"
       address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 1)]
       delegation = [{
-        name = "Microsoft.ContainerInstance"
+        name = "Microsoft.ContainerInstance/containerGroups"
         service_delegation = {
-          name = "Microsoft.ContainerInstance"
+          name = "Microsoft.ContainerInstance/containerGroups"
         }
       }]
     }
-
   }
 
   # virtual_network_dns_servers = {

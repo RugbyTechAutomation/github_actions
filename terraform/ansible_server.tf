@@ -1,3 +1,19 @@
+# data "template_file" "init" {
+#   template = file("../scripts/cloud-init.tpl")
+# }
+
+# data "template_cloudinit_config" "config" {
+#   gzip          = true
+#   base64_encode = true
+
+#   # Main cloud-config configuration file.
+#   part {
+#     filename     = "init.cfg"
+#     content_type = "text/cloud-config"
+#     content      = data.template_file.init.rendered
+#   }
+# }
+
 module "ansible" {
   source                             = "Azure/avm-res-compute-virtualmachine/azurerm"
   for_each                           = toset(local.regions)
@@ -25,7 +41,9 @@ module "ansible" {
     user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
   }
 
-  custom_data = base64encode(file("../scripts/setup.sh"))
+  custom_data = base64encode(file("../scripts/ubuntu-setup.sh"))
+  # custom_data = base64encode(file("../scripts/cloud-init.txt"))
+  # custom_data = base64encode(data.template_cloudinit_config.config.rendered)
 
   network_interfaces = {
     network_interface_1 = {
@@ -34,7 +52,7 @@ module "ansible" {
       ip_configurations = {
         ip_configuration_1 = {
           name                          = "nic-vmansadvuks02-ipconfig"
-          private_ip_subnet_resource_id = module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].id
+          private_ip_subnet_resource_id = module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].resource_id
           private_ip_address_allocation = "Static"
           private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 7)
         }
@@ -82,22 +100,29 @@ module "ansible" {
   allow_extension_operations = true
 
   extensions = {
-    AAD_SSH_Login_For_Linux = {
-      name                       = "AADSSHLoginForLinux"
-      publisher                  = "Microsoft.Azure.ActiveDirectory"
-      type                       = "AADSSHLoginForLinux"
-      type_handler_version       = "1.0"
-      auto_upgrade_minor_version = true
-      automatic_upgrade_enabled  = false
-      settings                   = null
-    }
+    # AAD_SSH_Login_For_Linux = {
+    #   name                       = "AADSSHLoginForLinux"
+    #   publisher                  = "Microsoft.Azure.ActiveDirectory"
+    #   type                       = "AADSSHLoginForLinux"
+    #   type_handler_version       = "1.0"
+    #   auto_upgrade_minor_version = true
+    #   automatic_upgrade_enabled  = false
+    #   settings                   = null
+    # }
   }
 
   source_image_reference = {
-    publisher = "RedHat"
-    offer     = "RHEL"
-    sku       = "94_gen2"
+    publisher = "Canonical"
+    offer     = "ubuntu-24_04-lts" #"0001-com-ubuntu-server-mantic"
+    sku       = "server"           #"23_10-gen2"
     version   = "latest"
   }
+
+  # source_image_reference = {
+  #   publisher = "RedHat"
+  #   offer     = "RHEL"
+  #   sku       = "94_gen2"
+  #   version   = "latest"
+  # }
 
 }

@@ -7,7 +7,6 @@ module "naming" {
 module "regions" {
   source = "Azure/regions/azurerm"
 }
-
 # resource "random_integer" "region_index" {
 #   max = length(local.test_regions) - 1
 #   min = 0

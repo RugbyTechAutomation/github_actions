@@ -40,12 +40,12 @@ module "loadbalancer" {
       ip_address                       = module.dc01[each.key].network_interfaces["network_interface_1"].private_ip_address
       virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].resource_id
     }
-    #   # address2 = {
-    #   #   name                             = "nic-vmansadvuks02-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
-    #   #   backend_address_pool_object_name = "pool2"
-    #   #   ip_address                       = module.ansible[each.key].network_interfaces["network_interface_1"].private_ip_address
-    #   #   virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].resource_id
-    #   # }
+    address2 = {
+      name                             = "nic-vmansadvuks02-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
+      backend_address_pool_object_name = "pool2"
+      ip_address                       = module.ansible[each.key].network_interfaces["network_interface_1"].private_ip_address
+      virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].resource_id
+    }
   }
 
   # Health Probe(s)
@@ -64,7 +64,7 @@ module "loadbalancer" {
     }
   }
 
-  # # Load Balaner rule(s)
+  # Load Balaner rule(s)
   lb_rules = {
     rdp = {
       name                              = "dc-rdp"
@@ -78,7 +78,7 @@ module "loadbalancer" {
       enable_tcp_reset                  = false
       # disable_outbound_snat             = true
     }
-    ansible = {
+    ssh = {
       name                              = "ansible-ssh"
       frontend_ip_configuration_name    = module.naming[each.key].public_ip.name
       backend_address_pool_object_names = ["pool2"]
@@ -91,5 +91,10 @@ module "loadbalancer" {
       # disable_outbound_snat             = true
     }
   }
+
+  depends_on = [
+    module.ansible,
+    module.dc01
+  ]
 
 }

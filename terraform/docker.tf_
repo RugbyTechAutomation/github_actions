@@ -3,10 +3,10 @@ resource "azurerm_container_group" "cg" {
   name                = module.naming[each.key].container_group.name
   location            = each.key
   resource_group_name = azurerm_resource_group.rg[each.key].name
-  ip_address_type     = "Private"
+  ip_address_type     = "Public" #"Private"
   # dns_name_label      = "aci-ansible"
-  os_type    = "Linux"
-  subnet_ids = [module.avm-res-network-virtualnetwork[each.key].subnets["container_group"].resource_id]
+  os_type = "Linux"
+  # subnet_ids = [module.avm-res-network-virtualnetwork[each.key].subnets["container_group"].resource_id]
 
   # identity = {
   #     type = system_assigned, user_assigned #          = true
@@ -22,6 +22,9 @@ resource "azurerm_container_group" "cg" {
     image  = "ubuntu:latest"
     cpu    = "1.0"
     memory = "2.0"
+    commands = [
+      "useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 ubuntu", "echo 'ubuntu:1QAZ2wsx3edc' | chpasswd", "echo 'root:1QAZ2wsx3edc' | chpasswd"
+    ]
 
     ports {
       port     = 22

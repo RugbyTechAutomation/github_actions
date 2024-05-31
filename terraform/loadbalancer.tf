@@ -24,66 +24,68 @@ module "loadbalancer" {
   # Backend Address Pool(s)
   backend_address_pools = {
     pool1 = {
-      name                        = "dc-rdp"
+      name                        = "control-ssh"
       virtual_network_resource_id = module.avm-res-network-virtualnetwork[each.key].resource_id # set a virtual_network_resource_id if using backend_address_pool_addresses
     }
     pool2 = {
-      name                        = "ansible-ssh"
+      name                        = "node-ssh"
       virtual_network_resource_id = module.avm-res-network-virtualnetwork[each.key].resource_id # set a virtual_network_resource_id if using backend_address_pool_addresses
     }
+
   }
 
   backend_address_pool_addresses = {
     address1 = {
-      name                             = "nic-vmansadvuks01-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
+      name                             = "nic-control-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
       backend_address_pool_object_name = "pool1"
-      ip_address                       = module.dc01[each.key].network_interfaces["network_interface_1"].private_ip_address
+      ip_address                       = module.control[each.key].network_interfaces["network_interface_1"].private_ip_address
       virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].resource_id
     }
     address2 = {
-      name                             = "nic-vmansadvuks02-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
+      name                             = "nic-node-ipconfig" #azurerm_network_interface.be_nic.ip_configuration[each.key].name
       backend_address_pool_object_name = "pool2"
-      ip_address                       = module.ansible[each.key].network_interfaces["network_interface_1"].private_ip_address
+      ip_address                       = module.node[each.key].network_interfaces["network_interface_1"].private_ip_address
       virtual_network_resource_id      = module.avm-res-network-virtualnetwork[each.key].resource_id
     }
+
   }
 
   # Health Probe(s)
   lb_probes = {
-    rdp = {
-      name                = "dc-rdp"
-      protocol            = "Tcp"
-      port                = 3389
-      interval_in_seconds = 300
-    }
     ssh = {
-      name                = "ansible-ssh"
+      name                = "ssh"
       protocol            = "Tcp"
       port                = 22
       interval_in_seconds = 300
     }
+    # node_ssh = {
+    #   name                = "ansible-ssh"
+    #   protocol            = "Tcp"
+    #   port                = 22
+    #   interval_in_seconds = 300
+    # }
   }
 
   # Load Balaner rule(s)
   lb_rules = {
-    rdp = {
-      name                              = "dc-rdp"
+    control_ssh = {
+      name                              = "control-ssh"
       frontend_ip_configuration_name    = module.naming[each.key].public_ip.name
       backend_address_pool_object_names = ["pool1"]
       protocol                          = "Tcp"
-      frontend_port                     = 3389
-      backend_port                      = 3389
-      probe_object_name                 = "rdp"
+      frontend_port                     = 22
+      backend_port                      = 22
+      probe_object_name                 = "ssh"
       idle_timeout_in_minutes           = 15
       enable_tcp_reset                  = false
       # disable_outbound_snat             = true
     }
-    ssh = {
-      name                              = "ansible-ssh"
+    node_ssh = {
+      name                              = "node-ssh"
       frontend_ip_configuration_name    = module.naming[each.key].public_ip.name
       backend_address_pool_object_names = ["pool2"]
       protocol                          = "Tcp"
-      frontend_port                     = 22
+      frontend_port                     = 22222
       backend_port                      = 22
       probe_object_name                 = "ssh"
       idle_timeout_in_minutes           = 15
@@ -93,8 +95,8 @@ module "loadbalancer" {
   }
 
   depends_on = [
-    module.ansible,
-    module.dc01
+    module.control,
+    module.node
   ]
 
 }

@@ -23,20 +23,13 @@ module "avm-res-network-virtualnetwork" {
   address_space       = [local.vnet_map[each.key]]
 
   subnets = {
-    "${module.naming[each.key].subnet.name}" = {
-      name             = module.naming[each.key].subnet.name
+    "control" = {
+      name             = "control"
       address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 0)]
-      # network_security_group = "/subscriptions/19067dda-d761-44a6-b79d-29a8e342f633/resourceGroups/rg-ans-adv-uks-01/providers/Microsoft.Network/networkSecurityGroups/nsg-ans-adv-uks-01" #module.avm-res-network-networksecuritygroup[each.key].resource_id
     }
-    "snet-ans-adv-uks-02" = {
-      name             = "snet-ans-adv-uks-02"
+    "node" = {
+      name             = "node"
       address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 1)]
-      delegation = [{
-        name = "Microsoft.ContainerInstance/containerGroups"
-        service_delegation = {
-          name = "Microsoft.ContainerInstance/containerGroups"
-        }
-      }]
     }
   }
 
@@ -82,8 +75,13 @@ module "avm-res-network-networksecuritygroup" {
   enable_telemetry    = var.enable_telemetry
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg" {
+resource "azurerm_subnet_network_security_group_association" "control" {
   for_each                  = toset(local.regions)
-  subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].resource_id
+  subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["control"].resource_id
+  network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].resource_id
+}
+resource "azurerm_subnet_network_security_group_association" "node" {
+  for_each                  = toset(local.regions)
+  subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["node"].resource_id
   network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].resource_id
 }

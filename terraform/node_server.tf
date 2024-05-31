@@ -14,8 +14,8 @@
 #   }
 # }
 
-module "ansible" {
-  source                             = "Azure/avm-res-compute-virtualmachine/azurerm"
+module "node" {
+  source                             = "./.terraform/modules/ansible/" #"Azure/avm-res-compute-virtualmachine/azurerm"
   for_each                           = toset(local.regions)
   admin_username                     = "localmgr"
   admin_password                     = "1QAZ2wsx3edc"
@@ -23,7 +23,7 @@ module "ansible" {
   generate_admin_password_or_ssh_key = false
   disable_password_authentication    = false
   location                           = each.key
-  name                               = "vmansadvuks02"
+  name                               = "node"
   resource_group_name                = azurerm_resource_group.rg[each.key].name
   virtualmachine_os_type             = "Linux"
   virtualmachine_sku_size            = "Standard_B2as_v2" #module.get_valid_sku_for_deployment_region.sku #
@@ -41,20 +41,20 @@ module "ansible" {
     user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
   }
 
-  custom_data = base64encode(file("../scripts/ubuntu-setup.sh"))
+  # custom_data = base64encode(file("../scripts/ubuntu-setup.sh"))
   # custom_data = base64encode(file("../scripts/cloud-init.txt"))
   # custom_data = base64encode(data.template_cloudinit_config.config.rendered)
 
   network_interfaces = {
     network_interface_1 = {
-      name                           = "nic-vmansadvuks02"
+      name                           = "nic-node"
       accelerated_networking_enabled = true
       ip_configurations = {
         ip_configuration_1 = {
-          name                          = "nic-vmansadvuks02-ipconfig"
-          private_ip_subnet_resource_id = module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].resource_id
-          private_ip_address_allocation = "Static"
-          private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 7)
+          name                          = "nic-node-ipconfig"
+          private_ip_subnet_resource_id = module.avm-res-network-virtualnetwork[each.key].subnets["node"].resource_id
+          private_ip_address_allocation = "Dynamic"
+          # private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 4)
         }
       }
     }
@@ -63,12 +63,12 @@ module "ansible" {
   os_disk = {
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
-    name                 = "dsk-vmansadvuks02-osDisk"
+    name                 = "dsk-node-osDisk"
   }
 
   data_disk_managed_disks = {
     for i in range(0) : format("disk-%02d", i + 1) => {
-      name                 = format("dsk-vmansadvuks02-dataDisk-%02d", i + 1)
+      name                 = format("dsk-node-dataDisk-%02d", i + 1)
       storage_account_type = "StandardSSD_LRS"
       create_option        = "Empty"
       disk_size_gb         = 64

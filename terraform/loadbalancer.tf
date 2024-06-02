@@ -58,12 +58,6 @@ module "loadbalancer" {
       port                = 22
       interval_in_seconds = 300
     }
-    # node_ssh = {
-    #   name                = "ansible-ssh"
-    #   protocol            = "Tcp"
-    #   port                = 22
-    #   interval_in_seconds = 300
-    # }
   }
 
   # Load Balaner rule(s)
@@ -85,7 +79,7 @@ module "loadbalancer" {
       frontend_ip_configuration_name    = module.naming[each.key].public_ip.name
       backend_address_pool_object_names = ["pool2"]
       protocol                          = "Tcp"
-      frontend_port                     = 22222
+      frontend_port                     = 122
       backend_port                      = 22
       probe_object_name                 = "ssh"
       idle_timeout_in_minutes           = 15

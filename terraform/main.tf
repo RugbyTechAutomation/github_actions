@@ -26,10 +26,19 @@ module "avm-res-network-virtualnetwork" {
     "control" = {
       name             = "control"
       address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 0)]
+
+      network_security_group = {
+        id = module.avm-res-network-networksecuritygroup[each.key].resource_id
+      }
     }
+
     "node" = {
       name             = "node"
       address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 1)]
+
+      network_security_group = {
+        id = module.avm-res-network-networksecuritygroup[each.key].resource_id
+      }
     }
   }
 
@@ -75,13 +84,13 @@ module "avm-res-network-networksecuritygroup" {
   enable_telemetry    = var.enable_telemetry
 }
 
-resource "azurerm_subnet_network_security_group_association" "control" {
-  for_each                  = toset(local.regions)
-  subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["control"].resource_id
-  network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].resource_id
-}
-resource "azurerm_subnet_network_security_group_association" "node" {
-  for_each                  = toset(local.regions)
-  subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["node"].resource_id
-  network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].resource_id
-}
+# resource "azurerm_subnet_network_security_group_association" "control" {
+#   for_each                  = toset(local.regions)
+#   subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["control"].resource_id
+#   network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].resource_id
+# }
+# resource "azurerm_subnet_network_security_group_association" "node" {
+#   for_each                  = toset(local.regions)
+#   subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["node"].resource_id
+#   network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].resource_id
+# }

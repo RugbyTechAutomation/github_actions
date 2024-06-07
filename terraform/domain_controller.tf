@@ -31,9 +31,9 @@ module "dc01" {
       ip_configurations = {
         ip_configuration_1 = {
           name                          = "nic-vmansadvuks01-ipconfig"
-          private_ip_subnet_resource_id = module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].resource_id
-          private_ip_address_allocation = "Static"
-          private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 4)
+          private_ip_subnet_resource_id = module.avm-res-network-virtualnetwork[each.key].subnets["node"].resource_id #module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].resource_id
+          private_ip_address_allocation = "Dynamic"                                                                   # "Static"
+          # private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 4)
         }
       }
     }

@@ -1,7 +1,7 @@
 module "naming" {
   # for_each = toset(local.regions)
   source = "Azure/naming/azurerm"
-  suffix = ["ans-adv-uks-01"]
+  suffix = ["acm-adv-uks-01"]
 }
 
 module "regions" {

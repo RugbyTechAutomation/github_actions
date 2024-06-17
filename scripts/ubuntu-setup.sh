@@ -1,12 +1,11 @@
 #!/bin/bash
 sudo ufw enable
 sudo ufw allow ssh
-sudo apt update && sudo apt install pipx -y
-pipx install --include-deps ansible pywinrm azure-mgmt-resource azure-cli
+sudo apt update && && sudo apt upgrade
+sudo apt install pipx -y
+pipx install ansible pywinrm azure-mgmt-resource azure-cli --include-deps
 # pipx install --include-deps pywinrm
-pipx ensurepath
-
-
+pipx ensurepath --force
 
 sudo mkdir -p /etc/ansible
 sudo mkdir -p /etc/ansible/inventories/production
@@ -40,10 +39,10 @@ sudo mkdir -p /etc/ansible/roles/common
 
 sudo apt install python3-pip -y
 ansible-galaxy collection install azure.azcollection microsoft.ad community.azure
-wget https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements.txt
-sed -i 's/==.*//' requirements.txt
-pip3 install -r requirements.txt
-pip3 install -r requirements.txt --upgrade
+# wget https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements.txt
+# sed -i 's/==.*//' requirements.txt
+# pip3 install -r requirements.txt
+# pip3 install -r requirements.txt --upgrade
 
 # pipx install --include-deps azure-mgmt-resource azure-cli #-core
 

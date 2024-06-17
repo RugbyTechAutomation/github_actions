@@ -1,96 +1,202 @@
 resource "azurerm_resource_group" "rg" {
-  for_each = toset(local.regions)
-  location = each.key
-  name     = module.naming[each.key].resource_group.name
+  name     = module.naming.resource_group.name
+  location = "UK West"
 }
 
-module "avm-res-managedidentity-userassignedidentity" {
-  source              = "Azure/avm-res-managedidentity-userassignedidentity/azurerm"
-  for_each            = toset(local.regions)
-  enable_telemetry    = var.enable_telemetry
-  name                = module.naming[each.key].user_assigned_identity.name
-  resource_group_name = azurerm_resource_group.rg[each.key].name
-  location            = each.key
+resource "azurerm_user_assigned_identity" "uai" {
+  location            = azurerm_resource_group.rg.location
+  name                = module.naming.user_assigned_identity.name
+  resource_group_name = azurerm_resource_group.rg.name
 }
 
-module "avm-res-network-virtualnetwork" {
-  for_each            = toset(local.regions)
-  source              = "Azure/avm-res-network-virtualnetwork/azurerm"
-  name                = module.naming[each.key].virtual_network.name
-  enable_telemetry    = var.enable_telemetry
-  resource_group_name = azurerm_resource_group.rg[each.key].name
-  location            = each.key
-  address_space       = [local.vnet_map[each.key]]
-
-  subnets = {
-    "control" = {
-      name             = "control"
-      address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 0)]
-
-      network_security_group = {
-        id = module.avm-res-network-networksecuritygroup[each.key].resource_id
-      }
-    }
-
-    "node" = {
-      name             = "node"
-      address_prefixes = [cidrsubnet("${local.vnet_map[each.key]}", 1, 1)]
-
-      network_security_group = {
-        id = module.avm-res-network-networksecuritygroup[each.key].resource_id
-      }
-    }
-  }
-
-  # virtual_network_dns_servers = {
-  #   dns_servers = ["8.8.8.8"]
-  # }
-
+resource "azurerm_virtual_network" "azfw_vnet" {
+  name                = "${module.naming.virtual_network.name}-hub"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  address_space       = ["10.0.0.0/16"]
 }
 
-module "avm-res-network-publicipaddress" {
-  for_each            = toset(local.regions)
-  source              = "Azure/avm-res-network-publicipaddress/azurerm"
-  name                = module.naming[each.key].public_ip.name
-  resource_group_name = azurerm_resource_group.rg[each.key].name
-  location            = each.key
+resource "azurerm_subnet" "firewall_subnet" {
+  name                 = "AzureFirewallSubnet"
+  address_prefixes     = ["10.0.1.0/26"]
+  virtual_network_name = azurerm_virtual_network.azfw_vnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
+}
+
+resource "azurerm_virtual_network" "VN-Spoke" {
+  name                = "${module.naming.virtual_network.name}-spoke"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  address_space       = ["192.168.0.0/16"]
+}
+
+resource "azurerm_subnet" "SN-Workload" {
+  name                 = module.naming.subnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.VN-Spoke.name
+  address_prefixes     = ["192.168.1.0/24"]
+}
+
+resource "azurerm_subnet" "ansible_subnet" {
+  name                 = "${module.naming.subnet.name}-ansible"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.VN-Spoke.name
+  address_prefixes     = ["192.168.2.0/24"]
+}
+
+resource "azurerm_virtual_network_peering" "hub-to-spoke" {
+  name                      = "${azurerm_virtual_network.azfw_vnet.name}-to-${azurerm_virtual_network.VN-Spoke.name}"
+  resource_group_name       = azurerm_resource_group.rg.name
+  virtual_network_name      = azurerm_virtual_network.azfw_vnet.name
+  remote_virtual_network_id = azurerm_virtual_network.VN-Spoke.id
+
+  # allow_virtual_network_access = true
+  # allow_forwarded_traffic      = true
+  # allow_gateway_transit        = false
+  # use_remote_gateways          = false
+}
+
+resource "azurerm_virtual_network_peering" "spoke-to-hub" {
+  name                      = "${azurerm_virtual_network.VN-Spoke.name}-to-${azurerm_virtual_network.azfw_vnet.name}"
+  resource_group_name       = azurerm_resource_group.rg.name
+  virtual_network_name      = azurerm_virtual_network.VN-Spoke.name
+  remote_virtual_network_id = azurerm_virtual_network.azfw_vnet.id
+
+  # allow_virtual_network_access = true
+  # allow_forwarded_traffic      = true
+  # allow_gateway_transit        = false
+  # use_remote_gateways          = false
+}
+
+
+resource "azurerm_public_ip" "pip_azfw" {
+  name                = module.naming.public_ip.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
-  enable_telemetry    = var.enable_telemetry
 }
 
-# module "avm-res-network-privatednszone" {
-#   for_each            = toset(local.regions)
-#   source              = "Azure/avm-res-network-privatednszone/azurerm"
-#   domain_name         = "ansible-poc.local"
-#   resource_group_name = azurerm_resource_group.rg[each.key].name
-
-#   virtual_network_links = {
-#     vnetlink1 = {
-#       vnetlinkname     = "${module.naming[each.key].virtual_network.name}-pdnslink"
-#       vnetid           = module.avm-res-network-virtualnetwork[each.key].virtual_network_id
-#       autoregistration = true
-#     }
-#   }
-# }
-
-module "avm-res-network-networksecuritygroup" {
-  for_each            = toset(local.regions)
-  source              = "Azure/avm-res-network-networksecuritygroup/azurerm"
-  name                = module.naming[each.key].network_security_group.name
-  resource_group_name = azurerm_resource_group.rg[each.key].name
-  location            = each.key
-  security_rules      = local.nsg_rules
-  enable_telemetry    = var.enable_telemetry
+resource "azurerm_firewall" "azfw" {
+  name                = module.naming.firewall.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku_name            = "AZFW_VNet"
+  sku_tier            = "Standard"
+  ip_configuration {
+    name                 = module.naming.firewall_ip_configuration.name
+    subnet_id            = azurerm_subnet.firewall_subnet.id
+    public_ip_address_id = azurerm_public_ip.pip_azfw.id
+  }
 }
 
-# resource "azurerm_subnet_network_security_group_association" "control" {
-#   for_each                  = toset(local.regions)
-#   subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["control"].resource_id
-#   network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].resource_id
-# }
-# resource "azurerm_subnet_network_security_group_association" "node" {
-#   for_each                  = toset(local.regions)
-#   subnet_id                 = module.avm-res-network-virtualnetwork[each.key].subnets["node"].resource_id
-#   network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].resource_id
-# }
+resource "azurerm_firewall_policy" "azfw" {
+  name                = module.naming.firewall_policy.name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+}
+
+resource "azurerm_route_table" "rt" {
+  name                          = module.naming.route_table.name
+  location                      = azurerm_resource_group.rg.location
+  resource_group_name           = azurerm_resource_group.rg.name
+  disable_bgp_route_propagation = false
+  route {
+    name                   = module.naming.route.name
+    address_prefix         = "0.0.0.0/0"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_firewall.azfw.ip_configuration[0].private_ip_address
+  }
+}
+
+resource "azurerm_subnet_route_table_association" "subnet_rt_association" {
+  subnet_id      = azurerm_subnet.SN-Workload.id
+  route_table_id = azurerm_route_table.rt.id
+}
+
+resource "azurerm_subnet_route_table_association" "ansible_subnet_rt_association" {
+  subnet_id      = azurerm_subnet.ansible_subnet.id
+  route_table_id = azurerm_route_table.rt.id
+}
+
+resource "azurerm_firewall_nat_rule_collection" "nat_rule_collection" {
+  name                = module.naming.firewall_nat_rule_collection.name
+  azure_firewall_name = azurerm_firewall.azfw.name
+  resource_group_name = azurerm_resource_group.rg.name
+  priority            = 200
+  action              = "Dnat"
+
+  rule {
+    name = "rdp-nat"
+    source_addresses = [
+      "*"
+    ]
+
+    destination_ports = [
+      "3389"
+    ]
+
+    destination_addresses = [
+      azurerm_public_ip.pip_azfw.ip_address
+    ]
+
+    translated_port    = 3389
+    translated_address = module.dc01.network_interfaces.network_interface_1.private_ip_address
+    protocols = [
+      "TCP"
+    ]
+  }
+  rule {
+    name = "ssh-nat"
+    source_addresses = [
+      "*"
+    ]
+
+    destination_ports = [
+      "22"
+    ]
+
+    destination_addresses = [
+      azurerm_public_ip.pip_azfw.ip_address
+    ]
+
+    translated_port    = 22
+    translated_address = module.control.network_interfaces.network_interface_1.private_ip_address
+    protocols = [
+      "TCP"
+    ]
+  }
+
+  depends_on = [
+    module.dc01,
+    module.control
+  ]
+}
+
+resource "azurerm_firewall_network_rule_collection" "example" {
+  name                = module.naming.firewall_network_rule_collection.name
+  azure_firewall_name = azurerm_firewall.azfw.name
+  resource_group_name = azurerm_resource_group.rg.name
+  priority            = 200
+  action              = "Allow"
+
+  rule {
+    name = "OutBoundAllAll"
+
+    source_addresses = [
+      "*",
+    ]
+
+    destination_ports = [
+      "*",
+    ]
+
+    destination_addresses = [
+      "*"
+    ]
+
+    protocols = [
+      "Any"
+    ]
+  }
+}

@@ -1,33 +1,16 @@
-# data "template_file" "init" {
-#   template = file("../scripts/cloud-init.tpl")
-# }
-
-# data "template_cloudinit_config" "config" {
-#   gzip          = true
-#   base64_encode = true
-
-#   # Main cloud-config configuration file.
-#   part {
-#     filename     = "init.cfg"
-#     content_type = "text/cloud-config"
-#     content      = data.template_file.init.rendered
-#   }
-# }
-
 module "control" {
   source                             = "Azure/avm-res-compute-virtualmachine/azurerm"
-  for_each                           = toset(local.regions)
   admin_username                     = "localmgr"
-  admin_password                     = "1QAZ2wsx3edc"
+  admin_password                     = "Lloyds0fLondon"
   enable_telemetry                   = var.enable_telemetry
   generate_admin_password_or_ssh_key = false
   disable_password_authentication    = false
-  location                           = each.key
+  location                           = azurerm_resource_group.rg.location
   name                               = "control"
 
-  resource_group_name     = azurerm_resource_group.rg[each.key].name
+  resource_group_name     = azurerm_resource_group.rg.name
   virtualmachine_os_type  = "Linux"
-  virtualmachine_sku_size = "Standard_B2as_v2" #module.get_valid_sku_for_deployment_region.sku #
+  virtualmachine_sku_size = "Standard_B2as_v2"
   zone                    = null
 
   # admin_ssh_keys = [
@@ -39,12 +22,8 @@ module "control" {
 
   managed_identities = {
     system_assigned            = true
-    user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
+    user_assigned_resource_ids = [azurerm_user_assigned_identity.uai.id]
   }
-
-  custom_data = base64encode(file("../scripts/ubuntu-setup.sh"))
-  # custom_data = base64encode(file("../scripts/cloud-init.txt"))
-  # custom_data = base64encode(data.template_cloudinit_config.config.rendered)
 
   network_interfaces = {
     network_interface_1 = {
@@ -55,9 +34,9 @@ module "control" {
         ip_configuration_1 = {
           name = "nic-control-ipconfig"
 
-          private_ip_subnet_resource_id = module.avm-res-network-virtualnetwork[each.key].subnets["control"].resource_id
+          private_ip_subnet_resource_id = azurerm_subnet.ansible_subnet.id
           private_ip_address_allocation = "Static"
-          private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 4)
+          private_ip_address            = cidrhost(azurerm_subnet.ansible_subnet.address_prefixes[0], 4)
         }
       }
     }
@@ -81,6 +60,17 @@ module "control" {
       # performance_plus_enabled = true
       lun     = i
       caching = "ReadWrite"
+    }
+  }
+
+  shutdown_schedules = {
+    standard_schedule = {
+      daily_recurrence_time = "1900"
+      timezone              = "GMT Standard Time"
+      enabled               = true
+      notification_settings = {
+        enabled = false
+      }
     }
   }
 
@@ -126,7 +116,7 @@ module "control" {
   # source_image_reference = {
   #   publisher = "RedHat"
   #   offer     = "RHEL"
-  #   sku       = "94_gen2"
+  #   sku       = "9-lvm-gen2" #"94_gen2"
   #   version   = "latest"
   # }
 

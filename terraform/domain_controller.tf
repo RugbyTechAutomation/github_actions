@@ -1,27 +1,19 @@
 module "dc01" {
   source                             = "Azure/avm-res-compute-virtualmachine/azurerm"
-  for_each                           = toset(local.regions)
   admin_username                     = "localmgr"
   admin_password                     = "1QAZ2wsx3edc"
   enable_telemetry                   = var.enable_telemetry
   generate_admin_password_or_ssh_key = false
-  location                           = each.key
-  name                               = "vmansadvuks01" #replace("${module.naming[each.key].virtual_machine.name}-01", "/-/", "")
-  resource_group_name                = azurerm_resource_group.rg[each.key].name
+  location                           = azurerm_resource_group.rg.location
+  name                               = "vmansadvuks01"
+  resource_group_name                = azurerm_resource_group.rg.name
   virtualmachine_os_type             = "Windows"
-  virtualmachine_sku_size            = "Standard_B2as_v2" #module.get_valid_sku_for_deployment_region.sku #
+  virtualmachine_sku_size            = "Standard_B2as_v2"
   zone                               = null
-
-  # admin_ssh_keys = [
-  #   {
-  #     public_key = jsondecode(jsonencode(azapi_resource_action.ssh_public_key_gen.output)).publicKey
-  #     username   = "localmgr" #the username must match the admin_username currently.
-  #   }
-  # ]
 
   managed_identities = {
     system_assigned            = true
-    user_assigned_resource_ids = [module.avm-res-managedidentity-userassignedidentity[each.key].resource_id]
+    user_assigned_resource_ids = [azurerm_user_assigned_identity.uai.id]
   }
 
   network_interfaces = {
@@ -31,9 +23,9 @@ module "dc01" {
       ip_configurations = {
         ip_configuration_1 = {
           name                          = "nic-vmansadvuks01-ipconfig"
-          private_ip_subnet_resource_id = module.avm-res-network-virtualnetwork[each.key].subnets["node"].resource_id #module.avm-res-network-virtualnetwork[each.key].subnets["${module.naming[each.key].subnet.name}"].resource_id
-          private_ip_address_allocation = "Dynamic"                                                                   # "Static"
-          # private_ip_address            = cidrhost("${local.vnet_map[each.key]}", 4)
+          private_ip_subnet_resource_id = azurerm_subnet.SN-Workload.id
+          private_ip_address_allocation = "Static" #"Dynamic" # 
+          private_ip_address            = cidrhost(azurerm_subnet.SN-Workload.address_prefixes[0], 4)
         }
       }
     }
@@ -58,9 +50,20 @@ module "dc01" {
     }
   }
 
+  shutdown_schedules = {
+    standard_schedule = {
+      daily_recurrence_time = "1900"
+      timezone              = "GMT Standard Time"
+      enabled               = true
+      notification_settings = {
+        enabled = false
+      }
+    }
+  }
+
   # role_assignments_system_managed_identity = {
   #   role_assignment_1 = {
-  #     scope_resource_id          = module.avm-res-keyvault-vault.resource.id
+  #     scope_resource_id          = module.keyvault.resource_id
   #     role_definition_id_or_name = "Key Vault Secrets Officer"
   #     description                = "Assign the Key Vault Secrets Officer role to the virtual machine's system managed identity"
   #     principal_type             = "ServicePrincipal"
@@ -80,20 +83,9 @@ module "dc01" {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
     sku       = "2022-datacenter-smalldisk-g2"
-    version   = "latest"
+    # publisher = "MicrosoftWindowsDesktop"
+    # offer     = "Windows-11"
+    # sku       = "win11-23h2-ent"
+    version = "latest"
   }
-
 }
-
-# resource "azurerm_network_interface_security_group_association" "windows" {
-#   for_each                  = toset(local.regions)
-#   network_interface_id      = module.avm-res-compute-virtualmachine[each.key].network_interfaces["network_interface_1"].id
-#   network_security_group_id = module.avm-res-network-networksecuritygroup[each.key].nsg_resource.id
-# }
-
-# resource "azurerm_network_interface_backend_address_pool_association" "example" {
-#   for_each                = toset(local.regions)
-#   network_interface_id    = module.avm-res-compute-virtualmachine[each.key].network_interfaces["network_interface_1"].id
-#   ip_configuration_name   = "internal"
-#   backend_address_pool_id = "/subscriptions/19067dda-d761-44a6-b79d-29a8e342f633/resourceGroups/rg-sql-adv-uks-01/providers/Microsoft.Network/loadBalancers/lb-sql-adv-uks-01/backendAddressPools/windows-rdp"
-# }

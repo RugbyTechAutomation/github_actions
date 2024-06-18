@@ -48,6 +48,11 @@ provider "azurerm" {
       skip_shutdown_and_force_delete = true
     }
   }
+
+  subscription_id     = var.TF_VAR_SUBSCRIPTION_ID
+  client_id           = var.TF_VAR_ARM_CLIENT_ID
+  client_secret       = var.TF_VAR_ARM_CLIENT_SECRET
+  tenant_id           = var.TF_VAR_TENANT_ID
   storage_use_azuread = true
   # subscription_id     = "19067dda-d761-44a6-b79d-29a8e342f633" # azdev
 }

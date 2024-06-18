@@ -29,15 +29,15 @@ terraform {
     }
   }
 
-  backend "azurerm" {
-    storage_account_name = var.TFSTATE_STORAGE_ACCOUNT #"ukpptfrm01strgacc"
-    container_name       = var.TFSTATE_CONTAINER       #"state"
-    key                  = var.TFSTATE_KEY             #"cckcom.terraform.tfstate"
-    use_azuread_auth     = true
-    subscription_id      = var.SUBSCRIPTION_ID        #"ee805603-e7a3-4754-be96-c8201fec77c8"
-    tenant_id            = var.TENANT_ID              #"8df4b91e-bf72-411d-9902-5ecc8f1e6c11"
-    resource_group_name  = var.TFSTATE_RESOURCE_GROUP #"uk-pp-tfrm-01-rg"
-  }
+  # backend "azurerm" {
+  #   storage_account_name = var.TFSTATE_STORAGE_ACCOUNT #"ukpptfrm01strgacc"
+  #   container_name       = var.TFSTATE_CONTAINER       #"state"
+  #   key                  = var.TFSTATE_KEY             #"cckcom.terraform.tfstate"
+  #   use_azuread_auth     = true
+  #   subscription_id      = var.SUBSCRIPTION_ID        #"ee805603-e7a3-4754-be96-c8201fec77c8"
+  #   tenant_id            = var.TENANT_ID              #"8df4b91e-bf72-411d-9902-5ecc8f1e6c11"
+  #   resource_group_name  = var.TFSTATE_RESOURCE_GROUP #"uk-pp-tfrm-01-rg"
+  # }
 
 }
 

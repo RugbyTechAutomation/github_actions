@@ -31,6 +31,7 @@ terraform {
 
   cloud {
     organization = "davidjyeo"
+    token        = "PhjSJOUVO59gpw.atlasv1.6cEbM6uDEGa2e1y7c59vdQP5pcRLkVbfvfPpylhNxalcpZTL7608hul5pkyRMFHZINA"
 
     workspaces {
       name = "State"

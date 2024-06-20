@@ -59,12 +59,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     
-    # env:
-    #   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-    #   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-    #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
-    #   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:
@@ -84,6 +78,11 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
+      env:
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       run: terraform init
 
     # Checks that all Terraform configuration files adhere to a canonical format

@@ -1,3 +1,5 @@
+# variable "HCP_TOKEN" {}
+
 terraform {
   required_providers {
     azurerm = {
@@ -31,7 +33,7 @@ terraform {
 
   cloud {
     organization = "davidjyeo"
-    token        = "PhjSJOUVO59gpw.atlasv1.6cEbM6uDEGa2e1y7c59vdQP5pcRLkVbfvfPpylhNxalcpZTL7608hul5pkyRMFHZINA"
+    token        = var.HCP_TOKEN
 
     workspaces {
       name = "State"

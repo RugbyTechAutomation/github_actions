@@ -61,7 +61,6 @@ jobs:
     environment: production
     env:
       TF_IN_AUTOMATION: ""
-      # TF_CLI_CONFIG_FILE: "$HOME/hpc/.terraformrc"
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -89,13 +88,11 @@ jobs:
       - name: Create .terraformrc with token
         run: |
           echo 'credentials "app.terraform.io" {' > ~/.terraformrc
-          echo '  token = "8A4S8Dd1in75zw.atlasv1.ZOy7RHp4iMu59pVr81l3RDaK4RkARrM8qV7aK5JCTO4AZZNRTUuOtoDpWtI0BcmbodI"' >> ~/.terraformrc
+          echo '  token = "${{ secrets.HCP_TOKEN }}"' >> ~/.terraformrc
           echo '}' >> ~/.terraformrc
 
       - name: Verify .terraformrc file
         run: cat ~/.terraformrc
-### echo '  token = "${{ secrets.TERRAFORM_TOKEN }}"' >> ~/.terraformrc
-
 # # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
 # - name: Terraform Init
 #   #   run: terraform login

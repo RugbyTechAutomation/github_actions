@@ -42,7 +42,7 @@ terraform {
 }
 
 provider "azurerm" {
-  skip_provider_registration = true
+  # skip_provider_registration = true
   features {
     virtual_machine {
       delete_os_disk_on_deletion     = true
@@ -63,8 +63,9 @@ provider "azapi" {
 }
 
 provider "azuread" {
-  use_oidc = true # or use the environment variable "ARM_USE_OIDC=true"
-  features {}
+  # use_oidc  = true                                        # or use the environment variable "ARM_USE_OIDC=true"
+  tenant_id = data.azurerm_subscription.current.tenant_id #88ef261e-b19b-4d71-9afd-cdac31a6dcda
+  # features {}
 }
 
 data "azurerm_client_config" "current" {}

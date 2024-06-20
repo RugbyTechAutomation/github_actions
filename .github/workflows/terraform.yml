@@ -61,7 +61,7 @@ jobs:
     environment: production
     env:
       TF_IN_AUTOMATION: ""
-      TF_CLI_CONFIG_FILE: "$HOME/.terraformrc-custom"
+      # TF_CLI_CONFIG_FILE: "$HOME/hpc/.terraformrc"
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

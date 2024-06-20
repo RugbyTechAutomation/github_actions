@@ -31,11 +31,12 @@ terraform {
 
   cloud {
     organization = "davidjyeo"
-    token        = ""
+    # token        = ""
 
     workspaces {
-      name    = "State"
-      project = "Azure"
+      # project = "Azure"
+      name = "State"
+
     }
   }
 

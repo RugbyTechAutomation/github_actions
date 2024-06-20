@@ -3,70 +3,70 @@ resource "azurerm_resource_group" "rg" {
   location = "UK West"
 }
 
-# resource "azurerm_user_assigned_identity" "uai" {
-#   location            = azurerm_resource_group.rg.location
-#   name                = module.naming.user_assigned_identity.name
-#   resource_group_name = azurerm_resource_group.rg.name
-# }
+resource "azurerm_user_assigned_identity" "uai" {
+  location            = azurerm_resource_group.rg.location
+  name                = module.naming.user_assigned_identity.name
+  resource_group_name = azurerm_resource_group.rg.name
+}
 
-# resource "azurerm_virtual_network" "azfw_vnet" {
-#   name                = "${module.naming.virtual_network.name}-hub"
-#   location            = azurerm_resource_group.rg.location
-#   resource_group_name = azurerm_resource_group.rg.name
-#   address_space       = ["10.0.0.0/16"]
-# }
+resource "azurerm_virtual_network" "azfw_vnet" {
+  name                = "${module.naming.virtual_network.name}-hub"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  address_space       = ["10.0.0.0/16"]
+}
 
-# resource "azurerm_subnet" "firewall_subnet" {
-#   name                 = "AzureFirewallSubnet"
-#   address_prefixes     = ["10.0.1.0/26"]
-#   virtual_network_name = azurerm_virtual_network.azfw_vnet.name
-#   resource_group_name  = azurerm_resource_group.rg.name
-# }
+resource "azurerm_subnet" "firewall_subnet" {
+  name                 = "AzureFirewallSubnet"
+  address_prefixes     = ["10.0.1.0/26"]
+  virtual_network_name = azurerm_virtual_network.azfw_vnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
+}
 
-# resource "azurerm_virtual_network" "VN-Spoke" {
-#   name                = "${module.naming.virtual_network.name}-spoke"
-#   location            = azurerm_resource_group.rg.location
-#   resource_group_name = azurerm_resource_group.rg.name
-#   address_space       = ["192.168.0.0/16"]
-# }
+resource "azurerm_virtual_network" "VN-Spoke" {
+  name                = "${module.naming.virtual_network.name}-spoke"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  address_space       = ["192.168.0.0/16"]
+}
 
-# resource "azurerm_subnet" "SN-Workload" {
-#   name                 = module.naming.subnet.name
-#   resource_group_name  = azurerm_resource_group.rg.name
-#   virtual_network_name = azurerm_virtual_network.VN-Spoke.name
-#   address_prefixes     = ["192.168.1.0/24"]
-# }
+resource "azurerm_subnet" "SN-Workload" {
+  name                 = module.naming.subnet.name
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.VN-Spoke.name
+  address_prefixes     = ["192.168.1.0/24"]
+}
 
-# resource "azurerm_subnet" "ansible_subnet" {
-#   name                 = "${module.naming.subnet.name}-ansible"
-#   resource_group_name  = azurerm_resource_group.rg.name
-#   virtual_network_name = azurerm_virtual_network.VN-Spoke.name
-#   address_prefixes     = ["192.168.2.0/24"]
-# }
+resource "azurerm_subnet" "ansible_subnet" {
+  name                 = "${module.naming.subnet.name}-ansible"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.VN-Spoke.name
+  address_prefixes     = ["192.168.2.0/24"]
+}
 
-# resource "azurerm_virtual_network_peering" "hub-to-spoke" {
-#   name                      = "${azurerm_virtual_network.azfw_vnet.name}-to-${azurerm_virtual_network.VN-Spoke.name}"
-#   resource_group_name       = azurerm_resource_group.rg.name
-#   virtual_network_name      = azurerm_virtual_network.azfw_vnet.name
-#   remote_virtual_network_id = azurerm_virtual_network.VN-Spoke.id
+resource "azurerm_virtual_network_peering" "hub-to-spoke" {
+  name                      = "${azurerm_virtual_network.azfw_vnet.name}-to-${azurerm_virtual_network.VN-Spoke.name}"
+  resource_group_name       = azurerm_resource_group.rg.name
+  virtual_network_name      = azurerm_virtual_network.azfw_vnet.name
+  remote_virtual_network_id = azurerm_virtual_network.VN-Spoke.id
 
-#   # allow_virtual_network_access = true
-#   # allow_forwarded_traffic      = true
-#   # allow_gateway_transit        = false
-#   # use_remote_gateways          = false
-# }
+  # allow_virtual_network_access = true
+  # allow_forwarded_traffic      = true
+  # allow_gateway_transit        = false
+  # use_remote_gateways          = false
+}
 
-# resource "azurerm_virtual_network_peering" "spoke-to-hub" {
-#   name                      = "${azurerm_virtual_network.VN-Spoke.name}-to-${azurerm_virtual_network.azfw_vnet.name}"
-#   resource_group_name       = azurerm_resource_group.rg.name
-#   virtual_network_name      = azurerm_virtual_network.VN-Spoke.name
-#   remote_virtual_network_id = azurerm_virtual_network.azfw_vnet.id
+resource "azurerm_virtual_network_peering" "spoke-to-hub" {
+  name                      = "${azurerm_virtual_network.VN-Spoke.name}-to-${azurerm_virtual_network.azfw_vnet.name}"
+  resource_group_name       = azurerm_resource_group.rg.name
+  virtual_network_name      = azurerm_virtual_network.VN-Spoke.name
+  remote_virtual_network_id = azurerm_virtual_network.azfw_vnet.id
 
-#   # allow_virtual_network_access = true
-#   # allow_forwarded_traffic      = true
-#   # allow_gateway_transit        = false
-#   # use_remote_gateways          = false
-# }
+  # allow_virtual_network_access = true
+  # allow_forwarded_traffic      = true
+  # allow_gateway_transit        = false
+  # use_remote_gateways          = false
+}
 
 
 # resource "azurerm_public_ip" "pip_azfw" {

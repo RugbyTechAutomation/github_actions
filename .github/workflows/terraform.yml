@@ -66,6 +66,7 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       HCP_TOKEN: ${{ secrets.HCP_TOKEN}}
+      TERRAFORM_CLI_PATH: ${{ runner.temp }}
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:

@@ -29,14 +29,14 @@ terraform {
     }
   }
 
-  cloud {
+  # cloud {
+  backend "remote" {
     organization = "davidjyeo"
     # token        = ""
 
     workspaces {
       # project = "Azure"
       name = "State"
-
     }
   }
 

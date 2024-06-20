@@ -91,6 +91,11 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
+      env:
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       run: terraform plan -input=false
 
       # On push to "main", build or change infrastructure according to Terraform configuration files

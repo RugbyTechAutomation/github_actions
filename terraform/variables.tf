@@ -36,19 +36,7 @@ variable "enable_telemetry" {
   default = "false"
 }
 
-
-# variable "TF_VAR_ARM_CLIENT_ID" {
-#   type = string
-# }
-
-# variable "TF_VAR_ARM_CLIENT_SECRET" {
-#   type = string
-# }
-
-# variable "TF_VAR_SUBSCRIPTION_ID" {
-#   type = string
-# }
-
-# variable "TF_VAR_TENANT_ID" {
-#   type = string
-# }
+variable "AZURE_SUBSCRIPTION_ID" {}
+variable "AZURE_CLIENT_ID" {}
+variable "AZURE_CLIENT_SECRET" {}
+variable "AZURE_TENANT_ID" {}

@@ -29,6 +29,14 @@ terraform {
     }
   }
 
+  cloud {
+    organization = "davidjyeo"
+
+    workspaces {
+      name = "State"
+    }
+  }
+
   # backend "azurerm" {
   #   storage_account_name = var.TFSTATE_STORAGE_ACCOUNT #"ukpptfrm01strgacc"
   #   container_name       = var.TFSTATE_CONTAINER       #"state"

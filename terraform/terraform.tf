@@ -31,10 +31,11 @@ terraform {
 
   cloud {
     organization = "davidjyeo"
-    token        = "" # This will be set by the environment variable
+    token        = ""
 
     workspaces {
-      name = "State"
+      name    = "State"
+      project = "Azure"
     }
   }
 

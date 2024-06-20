@@ -3,30 +3,30 @@ terraform {
     azurerm = {
       source = "hashicorp/azurerm"
     }
-    tls = {
-      source = "hashicorp/tls"
-    }
-    local = {
-      source = "hashicorp/local"
-    }
-    random = {
-      source = "hashicorp/random"
-    }
-    http = {
-      source = "hashicorp/http"
-    }
-    time = {
-      source = "hashicorp/time"
-    }
-    azapi = {
-      source = "azure/azapi"
-    }
-    template = {
-      source = "hashicorp/template"
-    }
-    azuread = {
-      source = "hashicorp/azuread"
-    }
+    # tls = {
+    #   source = "hashicorp/tls"
+    # }
+    # local = {
+    #   source = "hashicorp/local"
+    # }
+    # random = {
+    #   source = "hashicorp/random"
+    # }
+    # http = {
+    #   source = "hashicorp/http"
+    # }
+    # time = {
+    #   source = "hashicorp/time"
+    # }
+    # azapi = {
+    #   source = "azure/azapi"
+    # }
+    # template = {
+    #   source = "hashicorp/template"
+    # }
+    # azuread = {
+    #   source = "hashicorp/azuread"
+    # }
   }
 
   # backend "azurerm" {
@@ -55,18 +55,17 @@ provider "azurerm" {
   client_secret       = var.AZURE_CLIENT_SECRET
   tenant_id           = var.AZURE_TENANT_ID
   storage_use_azuread = true
-  # subscription_id     = "19067dda-d761-44a6-b79d-29a8e342f633" # azdev
 }
 
-provider "azapi" {
-  enable_hcl_output_for_data_source = true
-}
+# provider "azapi" {
+#   enable_hcl_output_for_data_source = true
+# }
 
-provider "azuread" {
-  # use_oidc  = true                                        # or use the environment variable "ARM_USE_OIDC=true"
-  tenant_id = data.azurerm_subscription.current.tenant_id #88ef261e-b19b-4d71-9afd-cdac31a6dcda
-  # features {}
-}
+# provider "azuread" {
+#   # use_oidc  = true                                        # or use the environment variable "ARM_USE_OIDC=true"
+#   tenant_id = data.azurerm_subscription.current.tenant_id #88ef261e-b19b-4d71-9afd-cdac31a6dcda
+#   # features {}
+# }
 
 data "azurerm_client_config" "current" {}
 data "azurerm_subscription" "current" {}

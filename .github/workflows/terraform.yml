@@ -86,11 +86,10 @@ jobs:
 
       - name: Configure Terraform CLI
         run: |
-          terraform --version
-          terraform init -input=false
-          terraform login -token=${HCP_TOKEN}
-        env:
-          HCP_TOKEN: ${{ secrets.HCP_TOKEN }}
+          terraform login -token=${{ secrets.HCP_TOKEN }}
+
+        # env:
+        #   HCP_TOKEN: ${{ secrets.HCP_TOKEN }}
 
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       # - name: Terraform Init

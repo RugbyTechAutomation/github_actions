@@ -61,6 +61,7 @@ jobs:
     environment: production
     env:
       TF_IN_AUTOMATION: ""
+      TF_CLI_CONFIG_FILE: "$HOME/.terraformrc-custom"
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -84,20 +85,13 @@ jobs:
         # with: # Credentials for HCP Terraform (app.terraform.io) can be configured:
         #   cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      - name: Configure Terraform CLI
-        run: |
-          terraform login -token=${{ secrets.HCP_TOKEN }}
-
-        # env:
-        #   HCP_TOKEN: ${{ secrets.HCP_TOKEN }}
-
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-      # - name: Terraform Init
-      #   run: terraform login
-      #   # run: terraform init
-      #   env:
-      #     ATLAS_TOKEN: ${{ secrets.HCP_TOKEN }}
-      #     TF_CLI_ARGS: "-no-color -input=false -auto-approve"
+      - name: Terraform Init
+        run: terraform login
+        # run: terraform init
+        env:
+          ATLAS_TOKEN: ${{ secrets.HCP_TOKEN }}
+          TF_CLI_ARGS: "-no-color -input=false -auto-approve"
 
       # Checks that all Terraform configuration files adhere to a canonical format
       - name: Terraform Format

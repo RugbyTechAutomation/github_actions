@@ -92,13 +92,13 @@ jobs:
       - name: Verify .terraformrc file
         run: cat ~/.terraformrc
 
-      # Validate all Terraform configuration files
-      - name: Terraform Validate
-        run: terraform validate
-
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: terraform init
+
+      # Validate all Terraform configuration files
+      - name: Terraform Validate
+        run: terraform validate
 
       # Checks that all Terraform configuration files adhere to a canonical format
       - name: Terraform Format

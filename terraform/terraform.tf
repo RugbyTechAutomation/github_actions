@@ -1,9 +1,3 @@
-variable "HCP_TOKEN" {
-  description = "The HCP token for authentication"
-  type        = string
-  default     = ""
-}
-
 terraform {
   required_providers {
     azurerm = {
@@ -37,7 +31,7 @@ terraform {
 
   cloud {
     organization = "davidjyeo"
-    token        = var.HCP_TOKEN
+    token        = "" # This will be set by the environment variable
 
     workspaces {
       name = "State"

@@ -37,18 +37,18 @@ variable "enable_telemetry" {
 }
 
 
-variable "TF_VAR_ARM_CLIENT_ID" {
-  type = string
-}
+# variable "TF_VAR_ARM_CLIENT_ID" {
+#   type = string
+# }
 
-variable "TF_VAR_ARM_CLIENT_SECRET" {
-  type = string
-}
+# variable "TF_VAR_ARM_CLIENT_SECRET" {
+#   type = string
+# }
 
-variable "TF_VAR_SUBSCRIPTION_ID" {
-  type = string
-}
+# variable "TF_VAR_SUBSCRIPTION_ID" {
+#   type = string
+# }
 
-variable "TF_VAR_TENANT_ID" {
-  type = string
-}
+# variable "TF_VAR_TENANT_ID" {
+#   type = string
+# }

@@ -84,13 +84,21 @@ jobs:
         # with: # Credentials for HCP Terraform (app.terraform.io) can be configured:
         #   cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-      - name: Terraform Init
-        run: terraform login
-        # run: terraform init
+      - name: Configure Terraform CLI
+        run: |
+          terraform --version
+          terraform init -input=false
+          terraform login -token=${HCP_TOKEN}
         env:
-          ATLAS_TOKEN: ${{ secrets.HCP_TOKEN }}
-          TF_CLI_ARGS: "-no-color -input=false -auto-approve"
+          HCP_TOKEN: ${{ secrets.HCP_TOKEN }}
+
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      # - name: Terraform Init
+      #   run: terraform login
+      #   # run: terraform init
+      #   env:
+      #     ATLAS_TOKEN: ${{ secrets.HCP_TOKEN }}
+      #     TF_CLI_ARGS: "-no-color -input=false -auto-approve"
 
       # Checks that all Terraform configuration files adhere to a canonical format
       - name: Terraform Format

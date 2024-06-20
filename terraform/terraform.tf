@@ -1,4 +1,8 @@
-# variable "HCP_TOKEN" {}
+variable "HCP_TOKEN" {
+  description = "The HCP token for authentication"
+  type        = string
+  default     = ""
+}
 
 terraform {
   required_providers {

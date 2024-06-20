@@ -36,10 +36,6 @@ variable "enable_telemetry" {
   default = "false"
 }
 
-variable "KCP_TOKEN" {
-  type = string
-}
-
 # variable "AZURE_SUBSCRIPTION_ID" {
 #   type = string
 # }

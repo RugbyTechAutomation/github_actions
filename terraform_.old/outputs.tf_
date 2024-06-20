@@ -1,0 +1,11 @@
+output "resource_group_name" {
+  value = azurerm_resource_group.rg.name
+}
+
+output "firewall_name" {
+  value = azurerm_firewall.azfw.name
+}
+
+output "dc_ip" {
+  value = module.dc01.network_interfaces.network_interface_1.private_ip_address
+}

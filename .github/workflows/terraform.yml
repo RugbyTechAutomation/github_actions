@@ -94,7 +94,7 @@ jobs:
 
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Workspace
-        run: terraform workspace select "sandbox" -or-create
+        run: terraform workspace select "sandbox" -or-create=true
       
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init

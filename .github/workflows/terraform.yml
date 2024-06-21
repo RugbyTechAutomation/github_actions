@@ -93,13 +93,13 @@ jobs:
         run: cat ~/.terraformrc
 
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-      - name: Terraform Workspace
-        run: terraform workspace select -or-create sandbox
-      
-      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: terraform init
 
+      # Create a new or use an existing Terraform Workspace.
+      - name: Terraform Workspace
+        run: terraform workspace select -or-create sandbox
+      
       # Validate all Terraform configuration files
       - name: Terraform Validate
         run: terraform validate

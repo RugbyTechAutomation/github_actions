@@ -96,6 +96,10 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      # Create a new or use an existing Terraform Workspace.
+      - name: Terraform Workspace
+        run: terraform workspace select -or-create sandbox
+      
       # Validate all Terraform configuration files
       - name: Terraform Validate
         run: terraform validate

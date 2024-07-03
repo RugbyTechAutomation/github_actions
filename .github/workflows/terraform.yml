@@ -83,14 +83,14 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Create .terraformrc with token
-        run: |
-          echo 'credentials "app.terraform.io" {' > ~/.terraformrc
-          echo '  token = "${{ secrets.HCP_TOKEN }}"' >> ~/.terraformrc
-          echo '}' >> ~/.terraformrc
+      # - name: Create .terraformrc with token
+      #   run: |
+      #     echo 'credentials "app.terraform.io" {' > ~/.terraformrc
+      #     echo '  token = "${{ secrets.HCP_TOKEN }}"' >> ~/.terraformrc
+      #     echo '}' >> ~/.terraformrc
 
-      - name: Verify .terraformrc file
-        run: cat ~/.terraformrc
+      # - name: Verify .terraformrc file
+      #   run: cat ~/.terraformrc
 
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
@@ -106,10 +106,10 @@ jobs:
 
       # Generates an execution plan for Terraform
       - name: Terraform Plan
-        run: terraform plan -input=false -lock=false
+        run: terraform plan -input=false
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
       - name: Terraform Apply
         # if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false -lock=false
+        run: terraform apply -auto-approve -input=false

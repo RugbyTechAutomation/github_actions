@@ -38,4 +38,6 @@ module "keyvault" {
 
   depends_on = [resource.azapi_resource_action.ssh_public_key_gen]
 
+  tags = local.common.tags
+
 }

@@ -88,4 +88,6 @@ module "dc01" {
     # sku       = "win11-23h2-ent"
     version = "latest"
   }
+
+  tags = local.common.tags
 }

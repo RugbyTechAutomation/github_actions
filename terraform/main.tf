@@ -1,6 +1,12 @@
 resource "azurerm_resource_group" "rg" {
   name     = module.naming.resource_group.name
   location = "UK West"
+
+  tags = {
+    Service     = "Ansible"
+    Environment = "Dev"
+  }
+
 }
 
 resource "azurerm_user_assigned_identity" "uai" {

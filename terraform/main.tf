@@ -11,7 +11,7 @@ resource "azurerm_user_assigned_identity" "uai" {
   name                = module.naming.user_assigned_identity.name
   resource_group_name = azurerm_resource_group.rg.name
 
-  tags = local.common.tags
+  # tags = local.common.tags
 }
 
 resource "azurerm_virtual_network" "azfw_vnet" {
@@ -20,7 +20,7 @@ resource "azurerm_virtual_network" "azfw_vnet" {
   resource_group_name = azurerm_resource_group.rg.name
   address_space       = ["10.0.0.0/16"]
 
-  tags = local.common.tags
+  # tags = local.common.tags
 }
 
 resource "azurerm_subnet" "firewall_subnet" {
@@ -36,7 +36,7 @@ resource "azurerm_virtual_network" "VN-Spoke" {
   resource_group_name = azurerm_resource_group.rg.name
   address_space       = ["192.168.0.0/16"]
 
-  tags = local.common.tags
+  # tags = local.common.tags
 }
 
 resource "azurerm_subnet" "SN-Workload" {

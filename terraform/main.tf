@@ -1,8 +1,8 @@
 resource "azurerm_resource_group" "rg" {
   name     = module.naming.resource_group.name
-  location = "UK West"
+  location = "UK South"
 
-  tags = local.common.tags
+  # tags = local.common.tags
 
 }
 

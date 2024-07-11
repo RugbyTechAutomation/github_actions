@@ -40,15 +40,15 @@ terraform {
   #   }
   # }
 
-  backend "azurerm" {
-    storage_account_name = "sttfrmmgmtuks01"           #var.TFSTATE_STORAGE_ACCOUNT
-    container_name       = "tfstate"                   #var.TFSTATE_CONTAINER
-    key                  = "ansible.terraform.tfstate" #var.TFSTATE_KEY
-    # subscription_id      = var.SUBSCRIPTION_ID
-    # tenant_id            = var.TENANT_ID
-    resource_group_name = "rg-tfrm-mgmt-uks-01" #var.TFSTATE_RESOURCE_GROUP
-    # use_azuread_auth     = true
-  }
+  # backend "azurerm" {
+  #   storage_account_name = "sttfrmmgmtuks01"           #var.TFSTATE_STORAGE_ACCOUNT
+  #   container_name       = "tfstate"                   #var.TFSTATE_CONTAINER
+  #   key                  = "ansible.terraform.tfstate" #var.TFSTATE_KEY
+  #   # subscription_id      = var.SUBSCRIPTION_ID
+  #   # tenant_id            = var.TENANT_ID
+  #   resource_group_name = "rg-tfrm-mgmt-uks-01" #var.TFSTATE_RESOURCE_GROUP
+  #   # use_azuread_auth     = true
+  # }
 
 }
 

@@ -32,8 +32,8 @@ jobs:
         working-directory: ${{ github.workspace }}/terraform
         run: terraform init -backend=false
 
-      # - name: Terraform Workspace
-      #   run: terraform workspace select -or-create sandbox
+      # - name: Terraform Workspace ##
+      #   run: terraform workspace select -or-create sandbox ##
 
       - name: Terraform Validate
         id: validate

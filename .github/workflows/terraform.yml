@@ -15,25 +15,25 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: 'Run az commands'
-        run: |
-          az account show
-          az group list
+  #     - name: 'Run az commands'
+  #       run: |
+  #         az account show
+  #         az group list
 
-  terraform:
-    name: Terraform Validation and Plan
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      pull-requests: write
-    # env:
-    #   ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
-    #   ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
-    #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    #   ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
-    #   VAR_PASSWORD: ${{ secrets.VAR_PASSWORD }}
-    steps:
+  # terraform:
+  #   name: Terraform Validation and Plan
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     actions: read
+  #     contents: read
+  #     pull-requests: write
+  #   # env:
+  #   #   ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+  #   #   ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+  #   #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #   #   ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+  #   #   VAR_PASSWORD: ${{ secrets.VAR_PASSWORD }}
+  #   steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -42,12 +42,15 @@ jobs:
 
       - name: Terraform fmt
         id: fmt
+        working-directory: ${{ github.workspace }}/terraform
         run: terraform fmt -check
         continue-on-error: true
 
       - name: Terraform Init
         id: init
+        working-directory: ${{ github.workspace }}/terraform
         run: terraform init -backend=false
+        
         # run: terraform init -backend-config="resource_group_name=tfstate" -backend-config="storage_account_name=tfstate1910602351" -backend-config="container_name=hubspoke" -backend-config="key=hubandspokemin.tfstate"
 
       # - name: Terraform Workspace
@@ -55,8 +58,10 @@ jobs:
 
       - name: Terraform Validate
         id: validate
+        working-directory: ${{ github.workspace }}/terraform
         run: terraform validate -no-color
 
       - name: Terraform Plan
         id: plan
+        working-directory: ${{ github.workspace }}/terraform
         run: terraform plan -no-color #-var=vm_admin_pwd=$VAR_PASSWORD

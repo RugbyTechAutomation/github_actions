@@ -20,179 +20,43 @@ jobs:
           az account show
           az group list
 
+  terraform:
+    name: Terraform Validation and Plan
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    # env:
+    #   ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+    #   ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+    #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    #   ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+    #   VAR_PASSWORD: ${{ secrets.VAR_PASSWORD }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v3
 
-# repo:davidjyeo/ansible:ref:refs/heads/main
-# name: Validate and Plan on PR
-# on:
-#   pull_request:
-#     types: [opened, synchronize]
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
 
-# jobs:
-#   terraform:
-#     name: Terraform Validation and Plan
-#     runs-on: ubuntu-latest
-#     permissions:
-#       actions: read
-#       contents: read
-#       pull-requests: write
-#     env:
-#       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
-#       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
-#       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-#       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
-#       VAR_PASSWORD: ${{ secrets.VAR_PASSWORD }}
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v4
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend=false
+        # run: terraform init -backend-config="resource_group_name=tfstate" -backend-config="storage_account_name=tfstate1910602351" -backend-config="container_name=hubspoke" -backend-config="key=hubandspokemin.tfstate"
 
-#       - name: Terraform Setup
-#         uses: hashicorp/setup-terraform@v3
+      # - name: Terraform Workspace
+      #   run: terraform workspace select -or-create sandbox
 
-#       - name: Terraform fmt
-#         id: fmt
-#         run: terraform fmt -check
-#         continue-on-error: true
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
 
-#       - name: Terraform Init
-#         id: init
-#         run: terraform init -backend=false
-#         # run: terraform init -backend-config="resource_group_name=tfstate" -backend-config="storage_account_name=tfstate1910602351" -backend-config="container_name=hubspoke" -backend-config="key=hubandspokemin.tfstate"
-
-#       - name: Terraform Workspace
-#         run: terraform workspace select -or-create sandbox
-
-#       - name: Terraform Validate
-#         id: validate
-#         run: terraform validate -no-color
-
-#       - name: Terraform Plan
-#         id: plan
-#         run: terraform plan -no-color -var=vm_admin_pwd=$VAR_PASSWORD
-
-#       - uses: actions/github-script@v6
-#         if: github.event_name == 'pull_request'
-#         env:
-#           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-#         with:
-#           github-token: ${{ secrets.GITHUB_TOKEN }}
-#           script: |
-#             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-#             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-#             #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-#             <details><summary>Validation Output</summary>
-
-#             \`\`\`\n
-#             ${{ steps.validate.outputs.stdout }}
-#             \`\`\`
-
-#             </details>
-
-#             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-
-#             <details><summary>Show Plan</summary>
-
-#             \`\`\`\n
-#             ${process.env.PLAN}
-#             \`\`\`
-
-#             </details>
-
-#             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
-
-#             github.rest.issues.createComment({
-#               issue_number: context.issue.number,
-#               owner: context.repo.owner,
-#               repo: context.repo.repo,
-#               body: output
-#             })            
-          
-
-
-# # # repos:
-# # # - repo: https://github.com/antonbabenko/pre-commit-terraform
-# # #   rev: v1.90.0 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
-# # #   hooks:
-# # #     - id: terraform_validate
-# # #       args:
-# # #         - --args=-json
-# # #         - --args=-no-color
-# # #         - --tf-init-args=-upgrade
-# # #         - --tf-init-args=-lockfile=readonly
-# # #         - --hook-config=--parallelism-ci-cpu-cores=1
-
-
-
-# # name: "Terraform"
-
-# # on:
-# #   workflow_dispatch:
-# #   push:
-# #     branches: ["main"]
-# #   pull_request:
-
-# # permissions:
-# #   contents: read
-
-# # jobs:
-# #   terraform:
-# #     name: "Terraform"
-# #     runs-on: ubuntu-latest
-# #     permissions:
-# #       actions: read
-# #       contents: read
-# #     # environment: production
-# #     env:
-# #       TF_IN_AUTOMATION: ""
-# #       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-# #       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-# #       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-# #       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-# #       HCP_TOKEN: ${{ secrets.HCP_TOKEN}}
-# #       # TERRAFORM_CLI_PATH: ${{ runner.temp }}
-
-
-
-
-# #     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-# #     defaults:
-# #       run:
-# #         shell: bash
-# #         working-directory: "./terraform"
-
-# #     steps:
-# #       # Checkout the repository to the GitHub Actions runner
-# #       - name: Checkout
-# #         uses: actions/checkout@v4
-
-# #       # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-# #       - name: Setup Terraform
-# #         uses: hashicorp/setup-terraform@v3
-
-# #       # Checks that all Terraform configuration files adhere to a canonical format
-# #       - name: Terraform Format
-# #         run: terraform fmt -check
-# #         continue-on-error: true
-
-# #       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-# #       - name: Terraform Init
-# #         # run: terraform init 
-# #         run: terraform init -backend=false
-
-# #       # Create a new or use an existing Terraform Workspace.
-# #       - name: Terraform Workspace
-# #         run: terraform workspace select -or-create sandbox
-      
-# #       # Validate all Terraform configuration files
-# #       - name: Terraform Validate
-# #         run: terraform validate -no-colour
-
-# #       # Generates an execution plan for Terraform
-# #       - name: Terraform Plan
-# #         run: terraform plan -input=false
-
-# #       # On push to "main", build or change infrastructure according to Terraform configuration files
-# #       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-# #       - name: Terraform Apply
-# #         # if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-# #         run: terraform apply -auto-approve -input=false
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color #-var=vm_admin_pwd=$VAR_PASSWORD

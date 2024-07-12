@@ -18,6 +18,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/terraform
+
       - name: Terraform Setup
         uses: hashicorp/setup-terraform@v3
 
@@ -45,7 +51,7 @@ jobs:
         working-directory: ${{ github.workspace }}/terraform
         run: terraform plan -no-color
 
-      - name: Terraform Apply
-        id: apply
-        working-directory: ${{ github.workspace }}/terraform
-        run: terraform apply -no-color --auto-approve
+      # - name: Terraform Apply
+      #   id: apply
+      #   working-directory: ${{ github.workspace }}/terraform
+      #   run: terraform apply -no-color --auto-approve

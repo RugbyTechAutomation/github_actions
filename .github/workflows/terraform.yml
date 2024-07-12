@@ -1,4 +1,4 @@
-name: Run Azure Login with OIDC
+name: Terraform CI/CD with OIDC
 on: [push]
 
 permissions:
@@ -7,6 +7,11 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
+    env:
+      # TF_WORKING_DIR: ./terraform
+      CACHE_KEY: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
+
     steps:
       - name: 'Az CLI login'
         uses: azure/login@v1
@@ -18,14 +23,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v3
+
       - name: Cache
         uses: actions/cache@v3
         with:
           path: |
             ${{ github.workspace }}/terraform
-
-      - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v3
+          key: ${{ env.CACHE_KEY }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
 
       - name: Terraform fmt
         id: fmt
@@ -49,7 +57,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: ${{ github.workspace }}/terraform
-        run: terraform plan -no-color
+        run: terraform plan -no-color -out-tfplan
 
       # - name: Terraform Apply
       #   id: apply

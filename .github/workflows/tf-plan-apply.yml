@@ -51,6 +51,16 @@ jobs:
       with:
         terraform_wrapper: false
 
+    - name: Cache Terraform state and dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ env.TF_WORKING_DIR }}/.terraform
+          ${{ env.TF_WORKING_DIR }}/.terraform.lock.hcl
+        key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
+        restore-keys: |
+          ${{ runner.os }}-terraform-
+
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ${{ env.TF_WORKING_DIR }}  
@@ -144,18 +154,34 @@ jobs:
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
+    
+    - name: Cache Terraform state and dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ env.TF_WORKING_DIR }}/.terraform
+          ${{ env.TF_WORKING_DIR }}/.terraform.lock.hcl
+        key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
+        restore-keys: |
+          ${{ runner.os }}-terraform-
 
+    - name: Restore tfplan
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.TF_WORKING_DIR }}/tfplan
+        key: ${{ runner.os }}-tfplan-${{ hashFiles('**/*.tf*') }}
+    
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ${{ env.TF_WORKING_DIR }}
       run: terraform init
 
-    # Download saved plan from artifacts  
-    - name: Download Terraform Plan
-      uses: actions/download-artifact@v4
-      with:
-        name: tfplan
-        path: ${{ env.TF_WORKING_DIR }}
+    # # Download saved plan from artifacts  
+    # - name: Download Terraform Plan
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: tfplan
+    #     path: ${{ env.TF_WORKING_DIR }}
 
     # Terraform Apply
     - name: Terraform Apply
@@ -185,15 +211,22 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Cache Terraform state and dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.TF_WORKING_DIR }}/.terraform
-            ${{ env.TF_WORKING_DIR }}/.terraform.lock.hcl
-          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
+      # - name: Cache Terraform state and dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ${{ env.TF_WORKING_DIR }}/.terraform
+      #       ${{ env.TF_WORKING_DIR }}/.terraform.lock.hcl
+      #     key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-terraform-
+
+      # # Download saved plan from artifacts  
+      # - name: Download Terraform Plan
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: tfplan
+      #     path: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Destroy
         id: destroy

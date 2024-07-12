@@ -7,6 +7,13 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    # This allows manual triggering of the workflow with parameters
+    inputs:
+      destroy:
+        description: 'Trigger Terraform destroy'
+        required: false
+        default: 'false'  # Default to not triggering destroy
 
 permissions:
   id-token: write
@@ -53,20 +60,6 @@ jobs:
         id: init
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init -upgrade
-
-# -backend-config="storage_account_name=stgtfstatedjy01" \
-# -backend-config="container_name=tfstate" \
-# -backend-config="key=terraform.tfstate" \
-# -backend-config="use_oidc=true" \
-# -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}"
-# -backend-config="use_azuread_auth=true"
-            
-# ${{ secrets.AZURE_ACCESS_KEY }}"
-# ${{ secrets.AZURE_BACKEND_KEY }}" \
-
-#\
-# -backend-config="key=${{ secrets.AZURE_BACKEND_KEY }}" \
-# -backend-config="access_key=${{ secrets.AZURE_ACCESS_KEY }}"
 
       - name: Terraform Validate
         id: validate
@@ -125,3 +118,41 @@ jobs:
         id: apply
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -no-color --auto-approve tfplan
+
+  terraform-destroy:
+    runs-on: ubuntu-latest
+    needs: []
+
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true'
+
+    env:
+      TF_WORKING_DIR: ./terraform
+
+    steps:
+      - name: Azure CLI login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Cache Terraform state and dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.TF_WORKING_DIR }}/.terraform
+            ${{ env.TF_WORKING_DIR }}/.terraform.lock.hcl
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+
+      - name: Terraform Destroy
+        id: destroy
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform destroy -no-color --auto-approve

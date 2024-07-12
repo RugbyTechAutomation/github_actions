@@ -112,7 +112,7 @@ jobs:
 
     env:
       TF_WORKING_DIR: ./terraform
-      CACHE_KEY: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
+      # CACHE_KEY: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
 
     steps:
       - name: Azure CLI login

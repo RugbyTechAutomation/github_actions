@@ -57,7 +57,10 @@ jobs:
             -backend-config="storage_account_name=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" \
             -backend-config="container_name=${{ secrets.AZURE_CONTAINER_NAME }}" \
             -backend-config="key="dummy.tfstate" \
-            -backend-config="access_key=${{ secrets.AZURE_CLIENT_ID }}
+            -backend-config="access_key=${{ secrets.AZURE_CLIENT_ID }} \
+            -backend-config="use_azuread_auth=true"
+
+# -backend-config="use_azuread_auth=true"
             
 # ${{ secrets.AZURE_ACCESS_KEY }}"
 # ${{ secrets.AZURE_BACKEND_KEY }}" \

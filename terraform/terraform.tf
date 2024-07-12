@@ -30,7 +30,10 @@ terraform {
   }
 
 
-  backend "azurerm" {}
+  backend "azurerm" {
+    # use_oidc         = true # Can also be set via `ARM_USE_OIDC` environment variable.
+    # use_azuread_auth = true
+  }
   # # cloud {
   # backend "remote" {
   #   organization = "davidjyeo"

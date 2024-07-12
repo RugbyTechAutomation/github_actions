@@ -158,6 +158,7 @@ jobs:
       run: terraform apply -auto-approve tfplan
 
   terraform-destroy:
+    name: 'Terraform Destroy'
     runs-on: ubuntu-latest
     needs: []
 

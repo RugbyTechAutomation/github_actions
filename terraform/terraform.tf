@@ -31,11 +31,13 @@ terraform {
 
 
   backend "azurerm" {
-    container_name       = "tfstate"
+    container_name       = var.AZURE_CONTAINER_NAME
     resource_group_name  = "rg-tfstate"
-    storage_account_name = "stgtfstatedjy01"
+    storage_account_name = var.AZURE_STORAGE_ACCOUNT_NAME
     use_oidc             = true
-    # use_azuread_auth = true
+    client_id            = var.AZURE_CLIENT_ID
+    tenant_id            = var.AZURE_TENANT_ID
+    key                  = "terraform.tfstate"
   }
   # # cloud {
   # backend "remote" {

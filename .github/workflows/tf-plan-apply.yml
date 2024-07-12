@@ -57,7 +57,7 @@ jobs:
 
     - name: Terraform Init
       working-directory: ${{ env.TF_WORKING_DIR }}
-      run: terraform init
+      run: terraform init -upgrade
 
     - name: Terraform Format
       working-directory: ${{ env.TF_WORKING_DIR }}
@@ -143,11 +143,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-terraform-
 
-    - name: Download Terraform Plan
-      uses: actions/download-artifact@v4
-      with:
-        name: tfplan
-        path: ${{ env.TF_WORKING_DIR }}
+    # - name: Download Terraform Plan
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: tfplan
+    #     path: ${{ env.TF_WORKING_DIR }}
 
     - name: Terraform Init
       working-directory: ${{ env.TF_WORKING_DIR }}

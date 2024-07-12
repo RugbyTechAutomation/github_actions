@@ -16,9 +16,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    env:
-      # TF_WORKING_DIR: ./terraform
-      CACHE_KEY: ${{ github.runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
+    # env:
+    #   # TF_WORKING_DIR: ./terraform
+    #   CACHE_KEY: ${{ github.runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
 
     steps:
       - name: 'Az CLI login'
@@ -39,7 +39,7 @@ jobs:
         with:
           path: |
             ${{ github.workspace }}/terraform
-          key: ${{ env.CACHE_KEY }}
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
           restore-keys: |
             ${{ runner.os }}-terraform-
 

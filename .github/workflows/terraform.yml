@@ -63,11 +63,11 @@ jobs:
         run: terraform init \
                -backend-config="storage_account_name=stgtfstatedjy01" \
                -backend-config="container_name=tfstate" \
+               -backend-config="resource_group_name=rg-tfstate"
                -backend-config="key=terraform.tfstate" \
                -backend-config="client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-               -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" 
-# \
-# -backend-config="use_oidc=true"
+               -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+               -backend-config="use_oidc=true"
 
       - name: Terraform Validate
         id: validate

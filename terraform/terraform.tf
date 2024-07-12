@@ -29,6 +29,8 @@ terraform {
     }
   }
 
+
+  backend "azurerm" {}
   # # cloud {
   # backend "remote" {
   #   organization = "davidjyeo"

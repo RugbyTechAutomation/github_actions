@@ -33,7 +33,7 @@ jobs:
     name: 'Terraform Plan'
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.destroy != 'true' }}
-    
+
     env:
       #this is needed since we are running terraform with read-only permissions
       ARM_SKIP_PROVIDER_REGISTRATION: true
@@ -155,6 +155,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: tfplan
+        path: ${{ env.TF_WORKING_DIR }}
 
     # Terraform Apply
     - name: Terraform Apply

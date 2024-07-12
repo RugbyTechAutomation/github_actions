@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
+  # workflow_dispatch:
 
 permissions:
   id-token: write
@@ -71,8 +71,6 @@ jobs:
         with:
           name: tfplan
           path: ${{ env.TF_WORKING_DIR }}/tfplan
-
-  
   
   terraform-apply:
     runs-on: ubuntu-latest

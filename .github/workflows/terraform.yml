@@ -61,12 +61,12 @@ jobs:
         id: init
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init -upgrade \
-              -backend-config="storage_account_name=stgtfstatedjy01" \
-              -backend-config="container_name=tfstate" \
-              -backend-config="key=terraform.tfstate" \
-              -backend-config="client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-              -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
-              -backend-config="use_oidc=true"
+               -backend-config="storage_account_name=stgtfstatedjy01" \
+               -backend-config="container_name=tfstate" \
+               -backend-config="key=terraform.tfstate" \
+               -backend-config="client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+               -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+               -backend-config="use_oidc=true"
 
       - name: Terraform Validate
         id: validate

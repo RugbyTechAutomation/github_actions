@@ -51,6 +51,7 @@ jobs:
         path: |
           ${{ env.TF_WORKING_DIR }}/.terraform
           ${{ env.TF_WORKING_DIR }}/.terraform.lock.hcl
+          ${{ env.TF_WORKING_DIR }}/tfplan
         key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
         restore-keys: |
           ${{ runner.os }}-terraform-
@@ -139,6 +140,7 @@ jobs:
         path: |
           ${{ env.TF_WORKING_DIR }}/.terraform
           ${{ env.TF_WORKING_DIR }}/.terraform.lock.hcl
+          ${{ env.TF_WORKING_DIR }}/tfplan
         key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf*') }}
         restore-keys: |
           ${{ runner.os }}-terraform-
@@ -157,9 +159,6 @@ jobs:
     needs: []
 
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true'
-
-    env:
-      TF_WORKING_DIR: ./terraform
 
     steps:
     - name: Azure CLI login

@@ -181,6 +181,10 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
 
+    - name: Terraform Init
+      working-directory: ${{ env.TF_WORKING_DIR }}
+      run: terraform init
+
     - name: Terraform Destroy
       id: destroy
       working-directory: ${{ env.TF_WORKING_DIR }}

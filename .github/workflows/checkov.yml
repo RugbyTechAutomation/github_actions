@@ -23,18 +23,18 @@ jobs:
           framework: terraform
           # download_external_modules: true
 
-      - name: Save SARIF File as Artifact
-        if: success()
-        run: |
-          python convert_to_sarif.py ${{ steps.checkov_scan.outputs.checkov_results }} checkov_results.sarif
-          echo "SARIF_FILE_URL=$(realpath checkov_results.sarif)" >> $GITHUB_ENV
+      # - name: Save SARIF File as Artifact
+      #   if: success()
+      #   run: |
+      #     python convert_to_sarif.py ${{ steps.checkov_scan.outputs.checkov_results }} checkov_results.sarif
+      #     echo "SARIF_FILE_URL=$(realpath checkov_results.sarif)" >> $GITHUB_ENV
 
       - name: Upload SARIF File
         if: success()
         uses: actions/upload-artifact@v3
         with:
-          name: checkov-sarif-results
-          path: checkov_results.sarif
+          name: results.sarif #checkov-sarif-results
+          path: . #checkov_results.sarif
 
       # - name: Save SARIF File as Artifact
       #   if: success()

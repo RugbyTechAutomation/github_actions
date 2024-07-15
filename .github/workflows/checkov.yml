@@ -29,13 +29,33 @@ jobs:
       #     python convert_to_sarif.py ${{ steps.checkov_scan.outputs.checkov_results }} checkov_results.sarif
       #     echo "SARIF_FILE_URL=$(realpath checkov_results.sarif)" >> $GITHUB_ENV
 
-      - name: Upload SARIF File
+      
+      - name: Display Checkov Results
         if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: results.sarif #checkov-sarif-results
-          path: ${{ steps.checkov_scan.outputs.checkov_results }} #. #checkov_results.sarif
-          # overwrite: false
+        run: |
+          echo "Checkov Scan Results:"
+          cat ${{ steps.checkov_scan.outputs.checkov_results }}
+      
+      
+      
+      # - name: Publish CheckOv Plan to Task Summary
+      #   env:
+      #     SUMMARY: ${{ steps.checkov_scan.outputs.checkov_results }}
+      #   run: echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+      
+      # - name: Publish Checkov Results to Task Summary
+      #   if: success()
+      #   run: |
+      #     echo "SUMMARY=$(cat ${{ steps.checkov_scan.outputs.checkov_results }})" >> $GITHUB_ENV
+      
+      
+      # - name: Upload SARIF File
+      #   if: success()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: results.sarif #checkov-sarif-results
+      #     path: ${{ steps.checkov_scan.outputs.checkov_results }} #. #checkov_results.sarif
+      #     # overwrite: false
 
       # - name: Save SARIF File as Artifact
       #   if: success()

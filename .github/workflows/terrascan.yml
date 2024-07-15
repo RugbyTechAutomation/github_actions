@@ -23,9 +23,9 @@ jobs:
       - name: Initialize Terrascan
         run: terrascan init
 
-      - name: Run Terrascan Scan
-        run: terrascan scan --iac-dir ${{ env.TF_WORKING_DIR }} --iac-type terraform --policy-type azure #--log-output-dir . --output github-sarif
-      #   continue-on-error: true
+      # - name: Run Terrascan Scan
+      #   run: terrascan scan --iac-dir ${{ env.TF_WORKING_DIR }} --iac-type terraform --policy-type azure #--log-output-dir . --output github-sarif
+      # #   continue-on-error: true
 
       # - name: Upload SARIF file
       #   uses: github/codeql-action/upload-sarif@v3
@@ -36,15 +36,15 @@ jobs:
 
     
     
-    # - name: Run Terrascan
-    #   id: terrascan
-    #   uses: tenable/terrascan-action@main
-    #   with:
-    #     iac_type: 'terraform'
-    #     # iac_version: 'v15'
-    #     policy_type: 'azure'
-    #     only_warn: true
-    #     # sarif_upload: true
-    #     iac_dir: ${{ env.TF_WORKING_DIR }}
-    #     #non_recursive:
+      - name: Run Terrascan
+        id: terrascan
+        uses: tenable/terrascan-action@main
+        with:
+          iac_type: 'terraform'
+          iac_version: 'v15'
+          policy_type: 'azure'
+          only_warn: true
+          sarif_upload: true
+          iac_dir: ${{ env.TF_WORKING_DIR }}
+          #non_recursive:
     

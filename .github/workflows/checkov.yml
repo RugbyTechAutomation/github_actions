@@ -34,7 +34,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: results.sarif #checkov-sarif-results
-          path: . #checkov_results.sarif
+          path: ${{ steps.checkov_scan.outputs.checkov_results }} #. #checkov_results.sarif
+          # overwrite: false
 
       # - name: Save SARIF File as Artifact
       #   if: success()

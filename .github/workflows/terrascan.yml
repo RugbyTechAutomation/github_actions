@@ -30,10 +30,11 @@ jobs:
         #   iac_type: 'terraform'
         #   directory: ${{ env.TF_WORKING_DIR }}
         #   policy_type: 'azure'
+        
       - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: scan-result.sarif
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: scan-result.sarif
 
 
     

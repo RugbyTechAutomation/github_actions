@@ -1,26 +1,37 @@
-name: terrascan
+name: Terrascan Scan
 
 on:
-  workflow_dispatch:
-
-env:
-  TF_WORKING_DIR: ./terraform
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  terrascan_job:
+  terrascan:
     runs-on: ubuntu-latest
-    name: terrascan-action
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Install Terrascan
-      run: |
-        curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Darwin_x86_64.tar.gz")" > terrascan.tar.gz
-        tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
-        install terrascan /usr/local/bin && rm terrascan
-        terrascan
-    - name: Initialize Terrascan
-      run: terrascan init
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Terrascan
+        run: |
+          curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz
+          tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
+          sudo install terrascan /usr/local/bin && rm terrascan
+
+      - name: Initialize Terrascan
+        run: terrascan init
+
+      # - name: Run Terrascan Scan
+      #   uses: tenable/terrascan-action@main
+      #   with:
+      #     iac_type: 'terraform'
+      #     directory: '.'
+      #     policy_type: 'azure'
+
 
     
     

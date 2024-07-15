@@ -50,7 +50,7 @@ jobs:
         uses: bridgecrewio/checkov-action@v12.1347.0
         with:
           # directory with infrastructure code to scan
-          directory: ${{ env.TF_WORKING_DIR }}/terraform
+          directory: ${{ env.TF_WORKING_DIR }}
           # Run scan only on a specific check identifier (comma separated)
           ## check: # optional
           # Run scan on all checks but a specific check identifier (comma separated)

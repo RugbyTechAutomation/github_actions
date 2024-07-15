@@ -21,7 +21,7 @@ jobs:
           directory: ${{ env.TF_WORKING_DIR }}
           soft_fail: true
           framework: terraform
-          download_external_modules: true
+          # download_external_modules: true
 
       - name: Save SARIF File as Artifact
         if: success()

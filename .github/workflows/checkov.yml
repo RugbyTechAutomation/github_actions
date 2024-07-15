@@ -30,10 +30,11 @@ jobs:
         run: pip install checkov
 
       - name: Checkov Scan
-        run: checkov --directory ${{ env.TF_WORKING_DIR }} --output sarif --output-file-path console,github --framework terraform --soft-fail    #--skip-results-upload checkov_results.sarif
+        run: checkov --directory ${{ env.TF_WORKING_DIR }} --output sarif --output-file-path console,github --framework terraform --soft-fail
    
-      # - name: Adding markdown
-      #   run: echo '### Hello world! 🚀' >> $GITHUB_STEP_SUMMARY
+      - name: Add Checkov Summary
+        run: echo ${{ steps.checkov_scan.outputs.checkov_results }} >> $GITHUB_STEP_SUMMARY
+        # run: echo 'results.sarif' >> $GITHUB_STEP_SUMMARY
       
         # - name: Checkov GitHub Action
         # uses: bridgecrewio/checkov-action@v12.1347.0

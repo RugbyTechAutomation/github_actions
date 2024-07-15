@@ -19,12 +19,12 @@ jobs:
       with:
         iac_type: 'terraform'
         iac_version: 'v14'
-        policy_type: 'azure'
+        policy_type: 'azurerm'
         only_warn: true
-        sarif_upload: true
+        # sarif_upload: true
         iac_dir: ./terraform
         #non_recursive:
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: terrascan.sarif
+    # - name: Upload SARIF file
+    #   uses: github/codeql-action/upload-sarif@v3
+    #   with:
+    #     sarif_file: terrascan.sarif

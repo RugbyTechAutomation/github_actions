@@ -30,18 +30,18 @@ jobs:
       #     echo "SARIF_FILE_URL=$(realpath checkov_results.sarif)" >> $GITHUB_ENV
 
       
-      - name: Display Checkov Results
-        if: success()
-        run: |
-          echo "Checkov Scan Results:"
-          cat ${{ steps.checkov_scan.outputs.checkov_results }}
+      # - name: Display Checkov Results
+      #   if: success()
+      #   run: |
+      #     echo "Checkov Scan Results:"
+      #     cat ${{ steps.checkov_scan.outputs.checkov_results }}
       
       
       
-      # - name: Publish CheckOv Plan to Task Summary
-      #   env:
-      #     SUMMARY: ${{ steps.checkov_scan.outputs.checkov_results }}
-      #   run: echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+      - name: Publish Checkov Plan to Task Summary
+        env:
+          SUMMARY: ${{ steps.checkov_scan.outputs.checkov_results }}
+        run: echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
       
       # - name: Publish Checkov Results to Task Summary
       #   if: success()

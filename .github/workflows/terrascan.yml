@@ -22,7 +22,6 @@ jobs:
 
       - name: Initialize Terrascan
         run: terrascan init
-        working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Run Terrascan Scan
         run: terrascan scan -t azure -f ${{ env.TF_WORKING_DIR }}

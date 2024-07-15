@@ -1,6 +1,9 @@
 name: Checkov Compliance Scan
 
 on:
+  push:
+    branches:
+    - main
 
   workflow_dispatch:
 
@@ -58,10 +61,10 @@ jobs:
       
       
       
-      # - name: Publish Checkov Plan to Task Summary
-      #   env:
-      #     SUMMARY: ${{ steps.checkov_scan.outputs.checkov_results }}
-      #   run: echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+      - name: Publish Checkov Plan to Task Summary
+        env:
+          SUMMARY: ${{ steps.checkov_scan.outputs.checkov_results }}
+        run: echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
       
       # - name: Publish Checkov Results to Task Summary
       #   if: success()

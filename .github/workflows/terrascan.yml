@@ -1,12 +1,10 @@
-name: Terrascan Scan
+name: terrascan
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+
+env:
+  TF_WORKING_DIR: ./terraform
 
 jobs:
   terrascan:
@@ -25,12 +23,12 @@ jobs:
       - name: Initialize Terrascan
         run: terrascan init
 
-      # - name: Run Terrascan Scan
-      #   uses: tenable/terrascan-action@main
-      #   with:
-      #     iac_type: 'terraform'
-      #     directory: '.'
-      #     policy_type: 'azure'
+      - name: Run Terrascan Scan
+        uses: tenable/terrascan-action@main
+        with:
+          iac_type: 'terraform'
+          directory: '.'
+          policy_type: 'azure'
 
 
     

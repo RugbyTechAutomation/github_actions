@@ -28,6 +28,9 @@ jobs:
 
       - name: Install Checkov
         run: pip install checkov
+
+      - name: Checkov Scan
+        run: checkov --directory ${{ env.TF_WORKING_DIR }} --output sarif --output-file-path console,checkov_results.sarif --framework terraform --soft-fail    #--skip-results-upload
    
       
       

@@ -13,13 +13,6 @@ module "control" {
   virtualmachine_sku_size = "Standard_B2as_v2"
   zone                    = null
 
-  # admin_ssh_keys = [
-  #   {
-  #     public_key = jsondecode(jsonencode(azapi_resource_action.ssh_public_key_gen.output)).publicKey
-  #     username   = "localmgr" #the username must match the admin_username currently.
-  #   }
-  # ]
-
   managed_identities = {
     system_assigned            = true
     user_assigned_resource_ids = [azurerm_user_assigned_identity.uai.id]
@@ -74,36 +67,9 @@ module "control" {
     }
   }
 
-  # role_assignments_system_managed_identity = {
-  #   role_assignment_1 = {
-  #     scope_resource_id          = module.avm-res-keyvault-vault.resource.id
-  #     role_definition_id_or_name = "Key Vault Secrets Officer"
-  #     description                = "Assign the Key Vault Secrets Officer role to the virtual machine's system managed identity"
-  #     principal_type             = "ServicePrincipal"
-  #   }
-  # }
-
-  # role_assignments = {
-  #   role_assignment_2 = {
-  #     principal_id               = data.azurerm_client_config.current.client_id
-  #     role_definition_id_or_name = "Virtual Machine Contributor"
-  #     description                = "Assign the Virtual Machine Contributor role to the deployment user on this virtual machine resource scope."
-  #     principal_type             = "ServicePrincipal"
-  #   }
-  # }
-
   allow_extension_operations = true
 
   extensions = {
-    # AAD_SSH_Login_For_Linux = {
-    #   name                       = "AADSSHLoginForLinux"
-    #   publisher                  = "Microsoft.Azure.ActiveDirectory"
-    #   type                       = "AADSSHLoginForLinux"
-    #   type_handler_version       = "1.0"
-    #   auto_upgrade_minor_version = true
-    #   automatic_upgrade_enabled  = false
-    #   settings                   = null
-    # }
   }
 
   source_image_reference = {
@@ -112,13 +78,6 @@ module "control" {
     sku       = "server"           #"23_10-gen2"
     version   = "latest"
   }
-
-  # source_image_reference = {
-  #   publisher = "RedHat"
-  #   offer     = "RHEL"
-  #   sku       = "9-lvm-gen2" #"94_gen2"
-  #   version   = "latest"
-  # }
 
   tags = local.common.tags
 

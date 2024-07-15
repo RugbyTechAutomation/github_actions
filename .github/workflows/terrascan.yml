@@ -1,4 +1,4 @@
-name: terrascan
+name: 'Compliance: terrascan'
 
 on:
   workflow_dispatch:
@@ -22,13 +22,15 @@ jobs:
 
       - name: Initialize Terrascan
         run: terrascan init
+        working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Run Terrascan Scan
-        uses: tenable/terrascan-action@main
-        with:
-          iac_type: 'terraform'
-          directory: '.'
-          policy_type: 'azure'
+        run: terrascan scan -t azure -f ${{ env.TF_WORKING_DIR }}
+        # uses: tenable/terrascan-action@main
+        # with:
+        #   iac_type: 'terraform'
+        #   directory: ${{ env.TF_WORKING_DIR }}
+        #   policy_type: 'azure'
 
 
     

@@ -24,7 +24,7 @@ jobs:
         run: terrascan init
 
       - name: Run Terrascan Scan
-        run: terrascan scan -t azure -f ${{ env.TF_WORKING_DIR }}
+        run: terrascan scan -d ./terraform # -i terraform -t azure -v
         # uses: tenable/terrascan-action@main
         # with:
         #   iac_type: 'terraform'

@@ -24,14 +24,14 @@ jobs:
         run: terrascan init
 
       - name: Run Terrascan Scan
-        run: terrascan scan --iac-dir ${{ env.TF_WORKING_DIR }} --iac-type terraform --policy-type azure --log-output-dir . --output github-sarif
-        continue-on-error: true
+        run: terrascan scan --iac-dir ${{ env.TF_WORKING_DIR }} --iac-type terraform --policy-type azure #--log-output-dir . --output github-sarif
+      #   continue-on-error: true
 
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: scan-result.sarif
-        if: always()
+      # - name: Upload SARIF file
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: scan-result.sarif
+      #   if: always()
 
 
     

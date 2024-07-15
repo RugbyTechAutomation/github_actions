@@ -8,7 +8,15 @@ env:
   TF_WORKING_DIR: ./terraform
 
 jobs:
+
+  # scan:
+  
   checkov:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
     runs-on: ubuntu-latest
 
     steps:
@@ -22,6 +30,18 @@ jobs:
           soft_fail: true
           framework: terraform
           # download_external_modules: true
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        
+        # Results are generated only on a success or failure
+        # this is required since GitHub by default won't run the next step
+        # when the previous one has failed. Security checks that do not pass will 'fail'.
+        # An alternative is to add `continue-on-error: true` to the previous step
+        # Or 'soft_fail: true' to checkov.
+        if: success() || failure()
+        with:
+          sarif_file: results.sarif
 
       # - name: Save SARIF File as Artifact
       #   if: success()
@@ -38,10 +58,10 @@ jobs:
       
       
       
-      - name: Publish Checkov Plan to Task Summary
-        env:
-          SUMMARY: ${{ steps.checkov_scan.outputs.checkov_results }}
-        run: echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+      # - name: Publish Checkov Plan to Task Summary
+      #   env:
+      #     SUMMARY: ${{ steps.checkov_scan.outputs.checkov_results }}
+      #   run: echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
       
       # - name: Publish Checkov Results to Task Summary
       #   if: success()

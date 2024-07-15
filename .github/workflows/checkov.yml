@@ -62,13 +62,13 @@ jobs:
           # do not return an error code if there are failed checks
           soft_fail: true # optional
           # run only on a specific infrastructure
-          ## framework: # optional
+          framework: terraform
           # comma separated list of external (custom) checks directories
           ## external_checks_dirs: # optional
           # comma separated list of external (custom) checks repositories
           ## external_checks_repos: # optional
           # The format of the output. cli, json, junitxml, github_failed_only, or sarif
-          output_format: serif #optional, default is sarif
+          output_format: sarif #optional, default is sarif
           # download external terraform modules from public git repositories and terraform registry:true, false
           ## download_external_modules: # optional
           # log level

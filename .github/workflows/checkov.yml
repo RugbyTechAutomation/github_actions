@@ -31,7 +31,7 @@ jobs:
         run: | 
           checkov --directory ${{ env.TF_WORKING_DIR }} \
           --output sarif \
-          --output-file-path console,github \
+          --output-file-path . \
           --framework terraform \
           --soft-fail
    

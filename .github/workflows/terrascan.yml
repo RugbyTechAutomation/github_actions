@@ -1,4 +1,4 @@
-name: 'Compliance: terrascan'
+name: 'Compliance: Terrascan'
 
 on:
   workflow_dispatch:
@@ -24,12 +24,16 @@ jobs:
         run: terrascan init
 
       - name: Run Terrascan Scan
-        run: terrascan scan -d ./terraform # -i terraform -t azure -v
+        run: terrascan scan --iac-dir ./terraform --iac-type terraform --policy-type azure --log-output-dir . --output github-sarif 
         # uses: tenable/terrascan-action@main
         # with:
         #   iac_type: 'terraform'
         #   directory: ${{ env.TF_WORKING_DIR }}
         #   policy_type: 'azure'
+      - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: scan-result.sarif
 
 
     
@@ -45,7 +49,4 @@ jobs:
     #     # sarif_upload: true
     #     iac_dir: ${{ env.TF_WORKING_DIR }}
     #     #non_recursive:
-    # - name: Upload SARIF file
-    #   uses: github/codeql-action/upload-sarif@v3
-    #   with:
-    #     sarif_file: terrascan.sarif
+    

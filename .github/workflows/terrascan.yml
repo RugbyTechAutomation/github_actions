@@ -22,7 +22,7 @@ jobs:
         policy_type: 'azure'
         only_warn: true
         # sarif_upload: true
-        iac_dir: ./terraform
+        iac_dir: ${{ env.TF_WORKING_DIR }}
         #non_recursive:
     # - name: Upload SARIF file
     #   uses: github/codeql-action/upload-sarif@v3

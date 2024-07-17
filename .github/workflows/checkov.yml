@@ -33,9 +33,11 @@ jobs:
           --output-file-path . \
           --framework terraform \
           --soft-fail \
+          --download-external-modules true \
+          --output cli,sarif \
           --output-file-path console,results.sarif
-          # --output: cli,sarif \
-          # --download-external-modules: true
+          
+         
           # --config_file: centralCheckov/.checkov.yml # This is a reference to the Configuration file with custom checks
           # # This will add both a CLI output to the console and create a results.sarif file
           # output_format: cli,sarif

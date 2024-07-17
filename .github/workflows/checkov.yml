@@ -11,7 +11,6 @@ env:
   TF_WORKING_DIR: ./terraform
 
 jobs:
-
   checkov:
     permissions:
       contents: read
@@ -33,7 +32,9 @@ jobs:
           --output sarif \
           --output-file-path . \
           --framework terraform \
-          --soft-fail
+          --soft-fail \
+          --output-file-path results.sarif \
+          --download-external-modules
    
       # - name: Display Checkov Results
       #   if: success()

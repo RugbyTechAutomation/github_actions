@@ -34,7 +34,6 @@ jobs:
           --framework terraform \
           --soft-fail \
           --download-external-modules true \
-          --output cli,sarif \
           --output-file-path console,results.sarif
           
          

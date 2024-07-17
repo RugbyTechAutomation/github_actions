@@ -1,4 +1,4 @@
-name: terrascan
+name: 'Terrascan'
 
 on:
   workflow_dispatch:
@@ -7,24 +7,40 @@ env:
   TF_WORKING_DIR: ./terraform
 
 jobs:
-  terrascan_job:
+  terrascan:
     runs-on: ubuntu-latest
-    name: terrascan-action
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Run Terrascan
-      id: terrascan
-      uses: tenable/terrascan-action@main
-      with:
-        iac_type: 'terraform'
-        iac_version: 'v14'
-        policy_type: 'azure'
-        only_warn: true
-        # sarif_upload: true
-        iac_dir: ${{ env.TF_WORKING_DIR }}
-        #non_recursive:
-    # - name: Upload SARIF file
-    #   uses: github/codeql-action/upload-sarif@v3
-    #   with:
-    #     sarif_file: terrascan.sarif
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Terrascan
+        run: |
+          curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz
+          tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
+          sudo install terrascan /usr/local/bin && rm terrascan
+
+      - name: Initialize Terrascan
+        run: terrascan init
+    
+      - name: Run Terrascan
+        id: terrascan
+        uses: tenable/terrascan-action@main
+        with:
+          iac_type: 'terraform'
+          iac_version: 'v15'
+          policy_type: 'azure'
+          only_warn: true
+          sarif_upload: true
+          iac_dir: ${{ env.TF_WORKING_DIR }}
+          #non_recursive:
+    
+      # - name: Run Terrascan Scan
+      #   run: terrascan scan --iac-dir ${{ env.TF_WORKING_DIR }} --iac-type terraform --policy-type azure #--log-output-dir . --output github-sarif
+      # #   continue-on-error: true
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: scan-result.sarif
+        if: always()

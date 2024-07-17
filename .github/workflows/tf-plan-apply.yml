@@ -65,7 +65,7 @@ jobs:
 
     - name: Terraform Init
       working-directory: ${{ env.TF_WORKING_DIR }}
-      run: terraform init -upgrade -migrate-state
+      run: terraform init
 
     - name: Terraform Format
       working-directory: ${{ env.TF_WORKING_DIR }}

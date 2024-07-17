@@ -33,7 +33,7 @@ jobs:
           --output-file-path . \
           --framework terraform \
           --soft-fail \
-          --output_format: cli,sarif \
+          --output-format: cli,sarif \
           --output-file-path console, results.sarif \
           --download-external-modules: true
           

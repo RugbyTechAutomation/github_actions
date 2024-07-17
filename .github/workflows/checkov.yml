@@ -35,11 +35,11 @@ jobs:
           --framework terraform \
           --soft-fail
    
-      - name: Display Checkov Results
-        if: success()
-        run: |
-          echo "### Checkov Scan Results"
-          cat results.sarif
+      # - name: Display Checkov Results
+      #   if: success()
+      #   run: |
+      #     echo "### Checkov Scan Results"
+      #     cat results.sarif
 
       # - name: Add Checkov Summary
       #   run: echo 'results.sarif' >> $GITHUB_STEP_SUMMARY

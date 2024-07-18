@@ -26,6 +26,91 @@ env:
   TF_WORKING_DIR: ./terraform
 
 jobs:
+  docs: 
+    # name: 'Terraform Doc'
+    # runs-on: ubuntu-latest
+    # steps:
+    # - uses: actions/checkout@v4
+    #   with:
+    #     token: ${{ secrets.TERRAFORM_DOCS_PAT_TOKEN }}
+    #     ref: ${{ github.event.pull_request.head.ref }}
+    # - name: Generate TF Docs
+    #   uses: terraform-docs/gh-actions@v1.0.0
+    #   with:
+    #     find-dir: /
+    #     git-push: true
+
+    name: 'Terraform-Docs'
+    runs-on: ubuntu-latest
+    steps: 
+    - uses: actions/checkout@v4
+
+    - uses: terraform-docs/gh-actions@v1.2.0
+      with:
+        working-dir: ${{ env.TF_WORKING_DIR }}
+        output-file: TERRAFORM-DOCS.md # optional, default is README.md
+        output-method: print
+
+
+        #     # Name of terraform-docs config file. To enable, provide the file name (e.g. `.terraform-docs.yml`)
+    #     config-file: # optional, default is disabled
+    #     # Comma separated list of directories to generate docs for (ignored if `atlantis-file` or `find-dir` is set)
+    #      working-dir: # optional, default is .
+    #     # Name of Atlantis file to extract list of directories by parsing it. To enable, provide the file name (e.g. `atlantis.yaml`)
+    #     atlantis-file: # optional, default is disabled
+    #     # Name of root directory to extract list of directories by running `find ./find_dir -name *.tf` (ignored if `atlantis-file` is set)
+    #     find-dir: # optional, default is disabled
+    #     # If true it will update submodules recursively
+    #     recursive: # optional, default is false
+    #     # Submodules path to recursively update
+    #     recursive-path: # optional, default is modules
+    #     # terraform-docs format to generate content (see [all formats](https://github.com/terraform-docs/terraform-docs/blob/master/docs/FORMATS_GUIDE.md)) (ignored if `config-file` is set)
+    #     output-format: # optional, default is markdown table
+    #     # Method should be one of `replace`, `inject`, or `print`. Set as an empty string if `output.mode` and `output.file` are defined in config-file
+    #     output-method: # optional, default is inject
+    #     # File in module directory where the docs should be placed
+        #     # When provided will be used as the template if/when the `output-file` does not exist. Set as an empty string if `output.template` is defined in config-file
+    #     template: # optional, default is <!-- BEGIN_TF_DOCS -->
+    # {{ .Content }}
+    # <!-- END_TF_DOCS -->
+    #     # Additional arguments to pass to the command (see [full documentation](https://github.com/terraform-docs/terraform-docs/tree/master/docs))
+    #     args: # optional, default is 
+    #     # Indention level of Markdown sections [1, 2, 3, 4, 5]
+    #     indention: # optional, default is 2
+    #     # If true it will commit and push the changes
+    #     git-push: # optional, default is false
+    #     # If empty the name of the GitHub Actions bot will be used (i.e. `github-actions[bot]`)
+    #     git-push-user-name: # optional, default is 
+    #     # If empty the no-reply email of the GitHub Actions bot will be used (i.e. `github-actions[bot]@users.noreply.github.com`)
+    #     git-push-user-email: # optional, default is 
+    #     # Commit message
+    #     git-commit-message: # optional, default is terraform-docs: automated action
+    #     # If true it will sign-off commit
+    #     git-push-sign-off: # optional, default is false
+    #     # Fail the job if there is any diff found between the generated output and existing file (ignored if `git-push` is set)
+    #     fail-on-diff: # optional, default is false
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   terraform-plan:
     name: 'Terraform Plan'
     runs-on: ubuntu-latest

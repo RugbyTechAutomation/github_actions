@@ -1,51 +1,42 @@
 #!/bin/bash
-sudo ufw enable
-sudo ufw allow ssh
-sudo apt update && && sudo apt upgrade
-sudo apt install pipx -y
-pipx install ansible pywinrm azure-mgmt-resource azure-cli --include-deps
-# pipx install --include-deps pywinrm
-pipx ensurepath --force
 
-sudo mkdir -p /etc/ansible
-sudo mkdir -p /etc/ansible/inventories/production
-sudo mkdir -p /etc/ansible/inventories/production/hosts
-sudo mkdir -p /etc/ansible/inventories/production/group_vars
-sudo mkdir -p /etc/ansible/inventories/production/host_vars
-sudo mkdir -p /etc/ansible/inventories/staging/hosts
-sudo mkdir -p /etc/ansible/inventories/staging/group_vars
-sudo mkdir -p /etc/ansible/inventories/staging/host_vars
-sudo mkdir -p /etc/ansible/group_vars
-sudo mkdir -p /etc/ansible/host_vars
-sudo mkdir -p /etc/ansible/library
-sudo mkdir -p /etc/ansible/module_utils
-sudo mkdir -p /etc/ansible/filter_plugins
-sudo mkdir -p /etc/ansible/roles/common
-sudo mkdir -p /etc/ansible/roles/webtier
-sudo mkdir -p /etc/ansible/roles/monitoring
-sudo mkdir -p /etc/ansible/roles/common
+# Update package index and install dependencies
+sudo apt-get update && sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    software-properties-common \
+    python3-pip \
+    pipx
 
-# sudo cat << EOF > /etc/ansible/ansible.cfg
-# [defaults]
-# host_key_checking = False
-# EOF
+# Set up Microsoft GPG key and Azure CLI repository
+sudo mkdir -p /etc/apt/keyrings
+curl -sLS https://packages.microsoft.com/keys/microsoft.asc | \
+  gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg > /dev/null
 
+sudo chmod go+r /etc/apt/keyrings/microsoft.gpg
 
-# # Increase size of logical volume rootvg/homelv.
-# sudo lvextend -L+10GB /dev/mapper/rootvg-homelv
-# sudo xfs_growfs /dev/rootvg/homelv
+AZ_DIST=$(lsb_release -cs)
+echo "Types: deb
+URIs: https://packages.microsoft.com/repos/azure-cli/
+Suites: ${AZ_DIST}
+Components: main
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/microsoft.gpg" | sudo tee /etc/apt/sources.list.d/azure-cli.sources
 
-# # Install Ansible az collection for interacting with Azure.
+# Add Ansible PPA
+sudo apt-add-repository -y ppa:ansible/ansible
 
-sudo apt install python3-pip -y
-ansible-galaxy collection install azure.azcollection microsoft.ad community.azure
-# wget https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements.txt
-# sed -i 's/==.*//' requirements.txt
-# pip3 install -r requirements.txt
-# pip3 install -r requirements.txt --upgrade
+# Update package index again to recognize new repositories
+sudo apt-get update
 
-# pipx install --include-deps azure-mgmt-resource azure-cli #-core
+# Install Ansible and Azure CLI
+sudo apt-get install -y ansible azure-cli
 
-# # pip3 install ansible[azure] --force
+# Create Ansible directory structure
+sudo mkdir -p /etc/ansible/{inventories/{production/{hosts,group_vars,host_vars},staging/{hosts,group_vars,host_vars}},group_vars,host_vars,library,module_utils,filter_plugins,roles/{common,webtier,monitoring}}
 
-sudo apt-get install python3-oauthlib --upgrade
+# Install Python packages using pipx
+pipx install pywinrm azure-mgmt-resource azure-identity --include-deps

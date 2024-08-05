@@ -2,8 +2,16 @@ resource "azurerm_resource_group" "rg" {
   name     = module.naming.resource_group.name
   location = "UK South"
 
+
   # tags = local.common.tags
 
+}
+
+resource "azurerm_management_lock" "resource-group-level" {
+  name       = "resource-group-level"
+  scope      = azurerm_resource_group.rg.id
+  lock_level = "ReadOnly"
+  notes      = "This Resource Group is Read-Only"
 }
 
 resource "azurerm_user_assigned_identity" "uai" {

@@ -1,12 +1,6 @@
 name: 'Terraform Docs'
 
 on:
-  #push:
-    #branches:
-    #- main
-  #pull_request:
-    #branches:
-    #- main
   workflow_dispatch:
 
 permissions:
@@ -19,27 +13,14 @@ env:
 
 jobs:
   docs: 
-    # name: 'Terraform Doc'
-    # runs-on: ubuntu-latest
-    # steps:
-    # - uses: actions/checkout@v4
-    #   with:
-    #     token: ${{ secrets.TERRAFORM_DOCS_PAT_TOKEN }}
-    #     ref: ${{ github.event.pull_request.head.ref }}
-    # - name: Generate TF Docs
-    #   uses: terraform-docs/gh-actions@v1.0.0
-    #   with:
-    #     find-dir: /
-    #     git-push: true
-
     name: 'Terraform-Docs'
     runs-on: ubuntu-latest
-    steps: 
+    steps:
     - uses: actions/checkout@v4
 
     - uses: terraform-docs/gh-actions@v1.2.0
       with:
         working-dir: ${{ env.TF_WORKING_DIR }}
-        output-file: TERRAFORM-DOCS.md # optional, default is README.md
+        output-file: TERRAFORM-DOCS.md
         output-method: inject
         git-push: true
